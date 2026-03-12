@@ -1,0 +1,51 @@
+## Historias de Usuario
+
+HU-21 – Notificación de pedido enviado
+Como: cliente
+Quiero: recibir una notificación cuando mi pedido sea enviado
+Para: saber cuándo llegará mi compra
+
+HU-22 – Cancelar pedido
+Como: cliente
+Quiero: cancelar un pedido antes de que sea enviado
+Para: evitar recibir un producto que ya no necesito
+
+HU-23 – Ordenar productos
+Como: cliente
+Quiero: ordenar los productos por precio o popularidad
+Para: encontrar más rápido lo que busco
+
+HU-24 – Ver productos relacionados
+Como: cliente
+Quiero: ver productos relacionados cuando veo un producto
+Para: descubrir artículos similares
+
+HU-25 – Ver resumen del carrito
+Como: cliente
+Quiero: ver un resumen del carrito antes de pagar
+Para: confirmar que los productos y precios son correctos
+
+HU-26 – Confirmación por correo
+Como: cliente
+Quiero: recibir un correo de confirmación después de comprar
+Para: tener comprobante de mi pedido
+
+HU-27 – Cerrar sesión
+Como: usuario
+Quiero: poder cerrar sesión
+Para: proteger mi cuenta cuando uso un dispositivo compartido
+
+HU-28 – Ver productos en oferta
+Como: cliente
+Quiero: ver una sección de productos en oferta
+Para: encontrar productos con descuento fácilmente
+
+HU-29 – Contactar soporte
+Como: cliente
+Quiero: poder enviar un mensaje al soporte
+Para: resolver dudas sobre mi pedido o producto
+
+HU-30 – Ver estado del envío
+Como: cliente
+Quiero: ver el estado del envío de mi pedido
+Para: saber si está en proceso, enviado o entregado
