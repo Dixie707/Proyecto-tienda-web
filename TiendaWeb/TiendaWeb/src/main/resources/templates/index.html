@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>JolenSport</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background: #efefef;
+                color: #111;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            .contenedor-principal {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                background: #efefef;
+            }
+
+            .franja-superior {
+                background: #000;
+                height: 38px;
+                width: 100%;
+            }
+
+            .header-marca {
+                width: 100%;
+                padding: 10px 26px 8px 26px;
+                border-bottom: 1px solid #7f7f7f;
+                background: #efefef;
+            }
+
+            .fila-header {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .lado-izquierdo,
+            .lado-derecho {
+                width: 130px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .lado-derecho {
+                justify-content: flex-end;
+            }
+
+            .icono-header {
+                color: #111;
+                text-decoration: none;
+                font-size: 1.8rem;
+            }
+
+            .centro-logo {
+                flex: 1;
+                text-align: center;
+            }
+
+            .logo-cuadro {
+                width: 62px;
+                height: 78px;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto 2px auto;
+            }
+
+            .titulo-marca {
+                margin: 0;
+                font-size: 2.15rem;
+                font-weight: 700;
+            }
+
+            .menu-categorias {
+                width: 100%;
+                border-bottom: 1px solid #7f7f7f;
+                padding: 14px 10px;
+                text-align: center;
+                background: #efefef;
+            }
+
+            .menu-categorias a {
+                color: #111;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 1.05rem;
+                margin: 0 18px;
+                display: inline-block;
+            }
+
+            .menu-categorias a:hover {
+                text-decoration: underline;
+            }
+
+            .hero {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                background: #ddd;
+            }
+
+            .hero img {
+                width: 100%;
+                height: 760px;
+                object-fit: cover;
+                display: block;
+            }
+
+            .hero-overlay {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                padding-bottom: 78px;
+                text-align: center;
+            }
+
+            .hero-titulo {
+                font-size: 5rem;
+                font-style: italic;
+                font-weight: 800;
+                color: #fff;
+                margin: 0 0 18px 0;
+                text-shadow: 0 3px 12px rgba(0,0,0,0.18);
+            }
+
+            .hero-boton {
+                background: #fff;
+                color: #111;
+                text-decoration: none;
+                border-radius: 999px;
+                padding: 18px 46px;
+                font-size: 1.15rem;
+                font-style: italic;
+                letter-spacing: 1px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            }
+
+            .franja-envios {
+                width: 100%;
+                background: #000;
+                color: #fff;
+                overflow: hidden;
+                white-space: nowrap;
+                padding: 12px 0;
+            }
+
+            .franja-envios-track {
+                display: inline-block;
+                white-space: nowrap;
+                animation: mover 20s linear infinite;
+                font-style: italic;
+                font-weight: 800;
+                font-size: 1.05rem;
+            }
+
+            .franja-envios span {
+                display: inline-block;
+                margin: 0 28px;
+            }
+
+            @keyframes mover {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-50%);
+                }
+            }
+
+            .categorias-destacadas {
+                width: 100%;
+                padding: 46px 30px 20px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 34px;
+            }
+
+            .categoria-box {
+                width: 210px;
+                height: 230px;
+                border-radius: 14px;
+                overflow: hidden;
+                position: relative;
+                text-decoration: none;
+                box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+                background: #ddd;
+                transition: transform 0.2s ease;
+            }
+
+            .categoria-box:hover {
+                transform: translateY(-5px);
+            }
+
+            .categoria-box img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            .categoria-box span {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                color: #fff;
+                font-size: 2rem;
+                font-weight: 800;
+                font-style: italic;
+                text-shadow: 0 4px 10px rgba(0,0,0,0.45);
+            }
+
+            .seccion-categoria {
+                width: 100%;
+                padding: 40px 30px 20px;
+            }
+
+            .titulo-seccion {
+                text-align: center;
+                font-size: 2.4rem;
+                font-weight: 800;
+                margin: 0 0 28px 0;
+            }
+
+            .grid-productos {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 24px;
+                width: 100%;
+            }
+
+            .producto-card {
+                background: #fff;
+                border-radius: 14px;
+                overflow: hidden;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.07);
+                transition: transform 0.2s ease;
+            }
+
+            .producto-card:hover {
+                transform: translateY(-4px);
+            }
+
+            .producto-img {
+                width: 100%;
+                height: 350px;
+                object-fit: cover;
+                display: block;
+                background: #e6e6e6;
+            }
+
+            .producto-info {
+                padding: 16px;
+                text-align: center;
+            }
+
+            .producto-nombre {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .producto-desc {
+                font-size: 0.95rem;
+                color: #6c6c6c;
+                min-height: 42px;
+                margin-bottom: 10px;
+            }
+
+            .producto-precio {
+                font-size: 1.15rem;
+                font-weight: 800;
+                margin-bottom: 14px;
+            }
+
+            .btn-jolen {
+                width: 100%;
+                display: block;
+                text-align: center;
+                text-decoration: none;
+                background: #000;
+                color: #fff;
+                padding: 12px 16px;
+                border-radius: 999px;
+                font-weight: 700;
+            }
+
+            .btn-jolen:hover {
+                background: #222;
+                color: #fff;
+            }
+
+            .mensaje-vacio {
+                text-align: center;
+                color: #666;
+                font-size: 1rem;
+                padding: 10px 0 20px;
+            }
+
+            .ancla-offset {
+                scroll-margin-top: 120px;
+            }
+
+            @media (max-width: 1100px) {
+                .hero img {
+                    height: 620px;
+                }
+
+                .hero-titulo {
+                    font-size: 4rem;
+                }
+            }
+
+            @media (max-width: 820px) {
+                .grid-productos {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .hero img {
+                    height: 500px;
+                }
+
+                .hero-titulo {
+                    font-size: 3rem;
+                }
+
+                .menu-categorias a {
+                    margin: 6px 10px;
+                    font-size: 0.98rem;
+                }
+
+                .lado-izquierdo,
+                .lado-derecho {
+                    width: 90px;
+                }
+            }
+
+            @media (max-width: 560px) {
+                .grid-productos {
+                    grid-template-columns: 1fr;
+                }
+
+                .hero img {
+                    height: 380px;
+                }
+
+                .hero-titulo {
+                    font-size: 2.3rem;
+                }
+
+                .hero-boton {
+                    padding: 14px 30px;
+                    font-size: 1rem;
+                }
+
+                .titulo-marca {
+                    font-size: 1.7rem;
+                }
+
+                .logo-cuadro {
+                    width: 52px;
+                    height: 64px;
+                }
+
+                .categoria-box {
+                    width: 170px;
+                    height: 190px;
+                }
+
+                .categoria-box span {
+                    font-size: 1.7rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="contenedor-principal">
+
+            <div class="franja-superior"></div>
+
+            <header class="header-marca">
+                <div class="fila-header">
+
+                    <div class="lado-izquierdo">
+                        <a href="#categorias" class="icono-header">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </a>
+                    </div>
+
+                    <div class="centro-logo">
+                        <img src="/img/logo.png" alt="Logo JolenSport" class="logo-cuadro">
+                        <h1 class="titulo-marca">JolenSport</h1>
+                    </div>
+
+                    <div class="lado-derecho">
+                        <a href="#" class="icono-header">
+                            <i class="fa-regular fa-circle-user"></i>
+                        </a>
+                        <a th:href="@{/carrito}" class="icono-header">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </header>
+
+            <nav class="menu-categorias">
+                <a href="#nuevo">Nuevo</a>
+                <a href="#sets">Sets</a>
+                <a href="#leggings">Leggings</a>
+                <a href="#tops">Tops</a>
+                <a href="#shorts">Shorts</a>
+                <a href="#enterizos">Enterizos</a>
+                <a th:href="@{/producto/lista}">Admin</a>
+            </nav>
+
+            <section class="hero" id="nuevo">
+                <img src="/img/banner-principal.jpg" alt="Banner principal">
+                <div class="hero-overlay">
+                    <h2 class="hero-titulo">Mas vendidos</h2>
+                    <a href="#populares" class="hero-boton">COMPRAR AHORA</a>
+                </div>
+            </section>
+            <section id="populares" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Más vendidos</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${populares}" class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="franja-envios">
+                <div class="franja-envios-track">
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                    <span>Envíos a todo Costa Rica</span>
+                </div>
+            </section>
+            <!-- MENSAJES DEL SISTEMA -->
+            <div th:if="${error}" style="background:#f8d7da; color:#842029; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${exito}" style="background:#d1e7dd; color:#0f5132; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
+                <span th:text="${exito}"></span>
+            </div>
+            <section id="sets" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Sets</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${productos}"
+                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Sets')}"
+                         class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="leggings" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Leggings</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${productos}"
+                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Leggings')}"
+                         class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tops" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Tops</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${productos}"
+                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Tops')}"
+                         class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="shorts" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Shorts</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${productos}"
+                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Shorts')}"
+                         class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="enterizos" class="seccion-categoria ancla-offset">
+                <h2 class="titulo-seccion">Enterizos</h2>
+                <div class="grid-productos">
+                    <div th:each="p : ${productos}"
+                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Enterizos')}"
+                         class="producto-card">
+
+                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                                 th:alt="${p.nombre}"
+                                 class="producto-img">
+                        </a>
+
+                        <div class="producto-info">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                                <div class="producto-nombre" th:text="${p.nombre}"></div>
+                            </a>
+                            <div class="producto-desc" th:text="${p.descripcion}"></div>
+                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </section>

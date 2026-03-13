@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrar productos</title>
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#f4f4f4;
+            color:#111;
+        }
+
+        .contenedor{
+            max-width:1200px;
+            margin:40px auto;
+            background:#fff;
+            border-radius:18px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.08);
+            overflow:hidden;
+        }
+
+        .encabezado{
+            background:#000;
+            color:#fff;
+            padding:24px 32px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:14px;
+        }
+
+        .encabezado h1{
+            margin:0;
+            font-size:2rem;
+        }
+
+        .acciones-superiores{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .btn{
+            text-decoration:none;
+            border:none;
+            cursor:pointer;
+            padding:12px 20px;
+            border-radius:999px;
+            font-weight:700;
+            display:inline-block;
+        }
+
+        .btn-negro{
+            background:#111;
+            color:#fff;
+        }
+
+        .btn-blanco{
+            background:#fff;
+            color:#111;
+        }
+
+        .contenido{
+            padding:28px 32px 36px;
+        }
+
+        .tabla-responsive{
+            width:100%;
+            overflow-x:auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:850px;
+        }
+
+        thead{
+            background:#f0f0f0;
+        }
+
+        th, td{
+            padding:14px 12px;
+            text-align:left;
+            border-bottom:1px solid #e2e2e2;
+            vertical-align:middle;
+        }
+
+        th{
+            font-size:0.95rem;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+        }
+
+        tr:hover{
+            background:#fafafa;
+        }
+
+        .col-id{
+            width:70px;
+            font-weight:700;
+        }
+
+        .precio{
+            font-weight:700;
+        }
+
+        .acciones{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .btn-editar{
+            background:#111;
+            color:#fff;
+            padding:8px 14px;
+            border-radius:999px;
+            text-decoration:none;
+            font-size:.9rem;
+            font-weight:700;
+        }
+
+        .btn-eliminar{
+            background:#e53935;
+            color:#fff;
+            padding:8px 14px;
+            border-radius:999px;
+            text-decoration:none;
+            font-size:.9rem;
+            font-weight:700;
+        }
+
+        .estado-vacio{
+            text-align:center;
+            padding:30px 0;
+            color:#666;
+        }
+
+        .mensaje{
+            margin-bottom:18px;
+            padding:14px 16px;
+            border-radius:10px;
+            font-weight:700;
+        }
+
+        .mensaje-exito{
+            background:#d1e7dd;
+            color:#0f5132;
+        }
+
+        .mensaje-error{
+            background:#f8d7da;
+            color:#842029;
+        }
+
+        @media (max-width: 768px){
+            .encabezado{
+                align-items:flex-start;
+            }
+
+            .encabezado h1{
+                font-size:1.6rem;
+            }
+
+            .contenido{
+                padding:20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="encabezado">
+            <h1>Administración de productos</h1>
+
+            <div class="acciones-superiores">
+                <a th:href="@{/}" class="btn btn-blanco">Volver a la tienda</a>
+                <a th:href="@{/producto/nuevo}" class="btn btn-blanco">Nuevo producto</a>
+            </div>
+        </div>
+
+        <div class="contenido">
+
+            <div th:if="${exito}" class="mensaje mensaje-exito">
+                <span th:text="${exito}"></span>
+            </div>
+
+            <div th:if="${error}" class="mensaje mensaje-error">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div class="tabla-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-id">ID</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${productos}">
+                            <td class="col-id" th:text="${p.id}"></td>
+                            <td th:text="${p.nombre}"></td>
+                            <td class="precio" th:text="'₡ ' + ${p.precio}"></td>
+                            <td>
+                                <div class="acciones">
+                                    <a th:href="@{/producto/editar/{id}(id=${p.id})}" class="btn-editar">Editar</a>
+                                    <a th:href="@{/producto/eliminar/{id}(id=${p.id})}" class="btn-eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
+                                       Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="4" class="estado-vacio">No hay productos registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

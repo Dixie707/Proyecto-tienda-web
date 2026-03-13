@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <style>
+        body{
+            margin:0;
+            font-family:Arial, sans-serif;
+            background:#f4f4f4;
+            color:#111;
+        }
+        .contenedor{
+            max-width:1000px;
+            margin:40px auto;
+            background:#fff;
+            padding:30px;
+            border-radius:16px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.08);
+        }
+        h1{
+            margin-top:0;
+            text-align:center;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin:20px 0;
+        }
+        th, td{
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            text-align:left;
+        }
+        .total{
+            text-align:right;
+            font-size:1.5rem;
+            font-weight:bold;
+            margin:20px 0;
+        }
+        .form-pago{
+            margin-top:25px;
+        }
+        select, button{
+            padding:12px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            font-size:1rem;
+        }
+        button{
+            background:#000;
+            color:#fff;
+            border:none;
+            cursor:pointer;
+            font-weight:bold;
+            padding:14px 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Finalizar compra</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.nombre}"></td>
+                    <td th:text="${item.cantidad}"></td>
+                    <td th:text="'₡ ' + ${item.precio}"></td>
+                    <td th:text="'₡ ' + ${item.subtotal}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total">
+            Total: <span th:text="'₡ ' + ${total}"></span>
+        </div>
+
+        <form th:action="@{/pedido/confirmar}" method="post" class="form-pago">
+            <label for="medioPago"><strong>Método de pago:</strong></label>
+            <select name="medioPago" id="medioPago" required>
+                <option value="">Seleccione una opción</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Sinpe">SINPE</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Efectivo">Efectivo</option>
+            </select>
+
+            <button type="submit">Confirmar compra</button>
+        </form>
+    </div>
+</body>
+</html>

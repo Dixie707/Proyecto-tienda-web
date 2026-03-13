@@ -1,0 +1,14 @@
+# Maven
+target/
+
+# archivos jar
+*.jar
+
+# NetBeans
+nbproject/private/
+
+# historial java
+jshell.history
+
+# firebase credentials
+Other sources/firebase/*.json
