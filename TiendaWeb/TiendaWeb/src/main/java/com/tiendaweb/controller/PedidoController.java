@@ -1,7 +1,7 @@
 package com.tiendaweb.controller;
  
-import com.tiendaweb.domain.Pedido;
-import com.tiendaweb.domain.Usuario;
+import com.tiendaweb.model.Pedido;
+import com.tiendaweb.model.Usuario;
 import com.tiendaweb.service.CarritoService;
 import com.tiendaweb.service.PedidoService;
 import jakarta.servlet.http.HttpSession;
