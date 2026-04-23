@@ -37,7 +37,7 @@ public class PedidoService {
     public Pedido crearPedido(HttpSession session, Usuario usuario, String medioPago) {
         Carrito carrito = (Carrito) session.getAttribute("carrito");
 
-        if (carrito == null || carrito.getItems().isEmpty()) {
+        if (carrito == null || carrito.getItems().isEmpty() || usuario == null) {
             return null;
         }
 
@@ -47,18 +47,28 @@ public class PedidoService {
         pedido.setTotal(carrito.getTotal());
 
         for (ItemCarrito item : carrito.getItems()) {
+            var productoOpt = productoRepository.findById(item.getProductoId());
+
+            if (productoOpt.isEmpty()) {
+                return null;
+            }
+
+            var producto = productoOpt.get();
+
+            if (producto.getStock() < item.getCantidad()) {
+                return null;
+            }
+
             DetallePedido detalle = new DetallePedido();
             detalle.setPedido(pedido);
+            detalle.setProducto(producto);
             detalle.setCantidad(item.getCantidad());
             detalle.setPrecioUnitario(item.getPrecio());
 
-            productoRepository.findById(item.getProductoId()).ifPresent(p -> {
-                detalle.setProducto(p);
-                p.setStock(p.getStock() - item.getCantidad());
-                productoRepository.save(p);
-            });
-
             pedido.getDetalles().add(detalle);
+
+            producto.setStock(producto.getStock() - item.getCantidad());
+            productoRepository.save(producto);
         }
 
         Pedido guardado = pedidoRepository.save(pedido);

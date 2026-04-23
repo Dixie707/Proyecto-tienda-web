@@ -1,12 +1,17 @@
 package com.tiendaweb.controller;
 
+import com.tiendaweb.model.Categoria;
+import com.tiendaweb.model.Producto;
 import com.tiendaweb.service.CategoriaService;
 import com.tiendaweb.service.ProductoService;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class HomeController {
@@ -20,19 +25,25 @@ public class HomeController {
     @GetMapping("/")
     public String index(Model model) {
 
-        model.addAttribute("productos", productoService.listar());
-        model.addAttribute("categorias", categoriaService.listar());
-        model.addAttribute("populares", productoService.listar().stream().limit(6).toList());
+        List<Producto> productos = productoService.listar();
+        List<Categoria> categorias = categoriaService.listar();
 
-        return "index";
-    }
+        Map<String, List<Producto>> productosPorCategoria = new LinkedHashMap<>();
 
-    @GetMapping("/categoria/{id}")
-    public String productosPorCategoria(@PathVariable Long id, Model model) {
+        for (Categoria categoria : categorias) {
+            List<Producto> lista = productos.stream()
+                    .filter(p -> p.getCategoria() != null
+                    && p.getCategoria().getNombre() != null
+                    && p.getCategoria().getId().equals(categoria.getId()))
+                    .collect(Collectors.toList());
 
-        model.addAttribute("productos", productoService.listarPorCategoria(id));
-        model.addAttribute("categorias", categoriaService.listar());
-        model.addAttribute("populares", productoService.listar().stream().limit(6).toList());
+            productosPorCategoria.put(categoria.getNombre(), lista);
+        }
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("productosPorCategoria", productosPorCategoria);
+        model.addAttribute("populares", productos.stream().limit(6).toList());
 
         return "index";
     }

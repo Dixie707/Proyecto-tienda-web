@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<header th:fragment="header" class="header-marca">
+    <div class="fila-header">
+
+        <div class="lado-izquierdo">
+            <a th:href="@{/}" class="icono-header">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+        </div>
+
+        <div class="centro-logo">
+            <a th:href="@{/}" style="text-decoration:none; color:inherit;">
+                <img src="/img/logo.png" alt="Logo JolenSport" class="logo-cuadro">
+                <h1 class="titulo-marca">JolenSport</h1>
+            </a>
+        </div>
+
+        <div class="lado-derecho">
+
+            <a th:if="${session.usuarioLogueado == null}"
+               th:href="@{/usuario/login}"
+               class="icono-header">
+                <i class="fa-regular fa-circle-user"></i>
+            </a>
+
+            <a th:if="${session.usuarioLogueado != null}"
+               th:href="@{/usuario/logout}"
+               class="icono-header">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+
+            <a th:href="@{/carrito}" class="icono-header">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </a>
+
+        </div>
+
+    </div>
+</header>
+
+</body>
+</html>

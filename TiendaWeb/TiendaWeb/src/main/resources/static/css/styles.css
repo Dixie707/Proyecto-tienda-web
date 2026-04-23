@@ -1,0 +1,121 @@
+/* ===== HEADER JOLENSPORT ===== */
+
+.header-marca {
+    padding: 12px 30px 8px;
+    border-bottom: 1px solid #777;
+    background: #f3f3f3;
+}
+
+.fila-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* lados */
+.lado-izquierdo,
+.lado-derecho {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.lado-derecho {
+    justify-content: flex-end;
+}
+
+/* iconos */
+.icono-header {
+    font-size: 1.8rem;
+    color: #111;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.icono-header:hover {
+    transform: scale(1.15);
+    opacity: 0.7;
+}
+
+/* centro logo */
+.centro-logo {
+    text-align: center;
+    flex: 1;
+}
+
+.logo-cuadro {
+    width: 42px;
+    height: 58px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 4px auto;
+}
+
+.titulo-marca {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* ===== NAVBAR ===== */
+
+.menu-categorias {
+    border-bottom: 1px solid #777;
+    padding: 14px 0;
+    text-align: center;
+    background: #f3f3f3;
+}
+
+.menu-categorias a {
+    text-decoration: none;
+    color: #111;
+    font-weight: 700;
+    margin: 0 18px;
+    font-size: 1rem;
+    position: relative;
+}
+
+/* efecto hover tipo nike */
+.menu-categorias a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: black;
+    transition: width 0.3s ease;
+}
+
+.menu-categorias a:hover::after {
+    width: 100%;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+
+    .fila-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .lado-izquierdo,
+    .lado-derecho {
+        width: auto;
+        justify-content: center;
+    }
+
+    .menu-categorias {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .menu-categorias a {
+        margin: 5px;
+    }
+}

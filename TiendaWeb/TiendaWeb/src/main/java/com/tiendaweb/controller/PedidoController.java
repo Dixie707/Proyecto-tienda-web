@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/pedido")
@@ -19,12 +20,19 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @GetMapping("/checkout")
-    public String checkoutForm(HttpSession session, Model model) {
+    public String checkoutForm(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para continuar con la compra");
+            return "redirect:/usuario/login";
+        }
+
         Carrito carrito = (Carrito) session.getAttribute("carrito");
 
-        if (carrito == null) {
-            carrito = new Carrito();
-            session.setAttribute("carrito", carrito);
+        if (carrito == null || carrito.getItems().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Tu carrito está vacío");
+            return "redirect:/carrito";
         }
 
         model.addAttribute("items", carrito.getItems());
@@ -37,19 +45,20 @@ public class PedidoController {
 
     @PostMapping("/confirmar")
     public String confirmar(@RequestParam String medioPago,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
-            usuario = new Usuario();
-            usuario.setId(1L);
-            usuario.setNombre("Cliente Invitado");
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para realizar la compra");
+            return "redirect:/usuario/login";
         }
 
         Pedido pedido = pedidoService.crearPedido(session, usuario, medioPago);
 
         if (pedido == null) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo procesar el pedido");
             return "redirect:/carrito";
         }
 
@@ -60,7 +69,7 @@ public class PedidoController {
     public String comprobante(@PathVariable Long id, Model model) {
         Optional<Pedido> op = pedidoService.buscarPorId(id);
 
-        if (!op.isPresent()) {
+        if (op.isEmpty()) {
             return "redirect:/";
         }
 
@@ -69,10 +78,11 @@ public class PedidoController {
     }
 
     @GetMapping("/misPedidos")
-    public String misPedidos(HttpSession session, Model model) {
+    public String misPedidos(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para ver tus pedidos");
             return "redirect:/usuario/login";
         }
 

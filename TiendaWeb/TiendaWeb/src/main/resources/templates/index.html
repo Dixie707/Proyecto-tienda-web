@@ -402,40 +402,22 @@
 
             <div class="franja-superior"></div>
 
-            <header class="header-marca">
-                <div class="fila-header">
-
-                    <div class="lado-izquierdo">
-                        <a href="#categorias" class="icono-header">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </a>
-                    </div>
-
-                    <div class="centro-logo">
-                        <img src="/img/logo.png" alt="Logo JolenSport" class="logo-cuadro">
-                        <h1 class="titulo-marca">JolenSport</h1>
-                    </div>
-
-                    <div class="lado-derecho">
-                        <a href="#" class="icono-header">
-                            <i class="fa-regular fa-circle-user"></i>
-                        </a>
-                        <a th:href="@{/carrito}" class="icono-header">
-                            <i class="fa-solid fa-bag-shopping"></i>
-                        </a>
-                    </div>
-
-                </div>
-            </header>
+            <div th:replace="fragmentos/header :: header"></div>
 
             <nav class="menu-categorias">
+
                 <a href="#nuevo">Nuevo</a>
-                <a href="#sets">Sets</a>
-                <a href="#leggings">Leggings</a>
-                <a href="#tops">Tops</a>
-                <a href="#shorts">Shorts</a>
-                <a href="#enterizos">Enterizos</a>
-                <a th:href="@{/producto/lista}">Admin</a>
+
+                <a th:each="c : ${categorias}"
+                   th:href="${'#' + #strings.toLowerCase(#strings.replace(c.nombre, ' ', '-'))}"
+                   th:text="${c.nombre}">
+                </a>
+
+                <a th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}"
+                   th:href="@{/producto/lista}">
+                    Admin
+                </a>
+
             </nav>
 
             <section class="hero" id="nuevo">
@@ -487,37 +469,18 @@
             <div th:if="${exito}" style="background:#d1e7dd; color:#0f5132; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
                 <span th:text="${exito}"></span>
             </div>
-            <section id="sets" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Sets</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${productos}"
-                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Sets')}"
-                         class="producto-card">
+            <section th:each="entry : ${productosPorCategoria}"
+                     th:id="${#strings.toLowerCase(#strings.replace(entry.key, ' ', '-'))}"
+                     class="seccion-categoria ancla-offset">
 
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
+                <h2 class="titulo-seccion" th:text="${entry.key}"></h2>
 
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
+                <div th:if="${#lists.isEmpty(entry.value)}" class="mensaje-vacio">
+                    No hay productos disponibles en esta categoría.
                 </div>
-            </section>
 
-            <section id="leggings" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Leggings</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${productos}"
-                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Leggings')}"
-                         class="producto-card">
+                <div th:if="${not #lists.isEmpty(entry.value)}" class="grid-productos">
+                    <div th:each="p : ${entry.value}" class="producto-card">
 
                         <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
                             <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
@@ -526,84 +489,11 @@
                         </a>
 
                         <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}"
+                               style="text-decoration:none; color:inherit;">
                                 <div class="producto-nombre" th:text="${p.nombre}"></div>
                             </a>
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <section id="tops" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Tops</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${productos}"
-                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Tops')}"
-                         class="producto-card">
-
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
-
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="shorts" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Shorts</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${productos}"
-                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Shorts')}"
-                         class="producto-card">
-
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
-
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="enterizos" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Enterizos</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${productos}"
-                         th:if="${p.categoria != null and #strings.equalsIgnoreCase(p.categoria.nombre,'Enterizos')}"
-                         class="producto-card">
-
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
-
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
                             <div class="producto-desc" th:text="${p.descripcion}"></div>
                             <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
                             <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | JolenSport</title>
+    <link rel="stylesheet" th:href="@{/css/usuario.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="auth-page">
+
+    <div class="top-bar">
+        <a th:href="@{/}" class="icon-link"><i class="fas fa-search"></i></a>
+
+        <div class="top-icons-right">
+            <a th:href="@{/usuario/login}" class="icon-link"><i class="far fa-user-circle"></i></a>
+            <a th:href="@{/carrito}" class="icon-link"><i class="fas fa-cart-shopping"></i></a>
+        </div>
+    </div>
+
+    <div class="auth-card">
+        <img th:src="@{/img/logo-jolensport.png}" alt="JolenSport" class="logo-img"
+             onerror="this.style.display='none'; document.getElementById('logoTexto').style.display='block';">
+
+        <div id="logoTexto" class="logo-fallback" style="display:none;">J</div>
+
+        <h1 class="brand">JolenSport</h1>
+        <h2 class="auth-title">Registro</h2>
+
+        <div th:if="${errorGeneral}" class="mensaje-error" th:text="${errorGeneral}"></div>
+
+        <form th:action="@{/usuario/registro}" th:object="${usuario}" method="post" class="auth-form">
+
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ingresar nombre" required>
+            <small class="campo-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>
+
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" th:field="*{correo}" placeholder="Ingresar correo electrónico" required>
+            <small class="campo-error" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></small>
+
+            <label for="contrasena">Contraseña</label>
+            <input type="password" id="contrasena" th:field="*{contrasena}" placeholder="Ingresar contraseña" required>
+            <small class="campo-error" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></small>
+
+            <label for="confirmarContrasena">Confirmar contraseña</label>
+            <input type="password" id="confirmarContrasena" name="confirmarContrasena" placeholder="Ingresar contraseña" required>
+
+            <button type="submit" class="btn-auth">Registrarse</button>
+        </form>
+
+        <p class="auth-switch">
+            ¿Ya tienes una cuenta?
+            <a th:href="@{/usuario/login}">Iniciar sesión</a>
+        </p>
+
+        <div class="social-login">
+            <i class="fab fa-google google"></i>
+            <i class="fab fa-facebook facebook"></i>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

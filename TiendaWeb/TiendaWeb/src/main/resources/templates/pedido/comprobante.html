@@ -1,52 +1,299 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Comprobante</title>
-    <style>
-        body{
-            margin:0;
-            font-family:Arial, sans-serif;
-            background:#f4f4f4;
-        }
-        .contenedor{
-            max-width:800px;
-            margin:50px auto;
-            background:#fff;
-            padding:35px;
-            border-radius:16px;
-            box-shadow:0 8px 24px rgba(0,0,0,0.08);
-            text-align:center;
-        }
-        h1{
-            color:#111;
-        }
-        .dato{
-            font-size:1.1rem;
-            margin:14px 0;
-        }
-        .btn{
-            display:inline-block;
-            margin-top:20px;
-            padding:14px 26px;
-            background:#000;
-            color:#fff;
-            text-decoration:none;
-            border-radius:999px;
-            font-weight:bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="contenedor">
-        <h1>Compra realizada con éxito</h1>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Comprobante | JolenSport</title>
+           <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-        <div class="dato">Pedido #<span th:text="${pedido.id}"></span></div>
-        <div class="dato">Fecha: <span th:text="${pedido.fecha}"></span></div>
-        <div class="dato">Total: ₡ <span th:text="${pedido.total}"></span></div>
-        <div class="dato">Método de pago: <span th:text="${pedido.medioPago}"></span></div>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
 
-        <a th:href="@{/}" class="btn">Volver a la tienda</a>
-    </div>
-</body>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background: #f3f3f3;
+                color: #111;
+            }
+
+            .pagina {
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 20px 12px;
+            }
+
+            .comprobante-box {
+                width: 100%;
+                max-width: 410px;
+                background: #f3f3f3;
+            }
+
+            .topbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 18px 10px 8px;
+            }
+
+            .topbar a {
+                color: #111;
+                text-decoration: none;
+                font-size: 1.2rem;
+                margin: 0 4px;
+            }
+
+            .logo-area {
+                text-align: center;
+                padding: 8px 20px 10px;
+            }
+
+            .logo-cuadro {
+                width: 90px;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto 6px auto;
+            }
+
+            .logo-fallback {
+                font-size: 96px;
+                font-family: Georgia, serif;
+                font-style: italic;
+                line-height: 1;
+                margin-bottom: 6px;
+            }
+
+            .marca {
+                font-size: 2rem;
+                font-weight: 500;
+                margin: 0;
+            }
+
+            .titulo-seccion {
+                border-top: 1px solid #9d9d9d;
+                border-bottom: 1px solid #9d9d9d;
+                padding: 30px 8px 22px;
+                margin-top: 4px;
+            }
+
+            .titulo-seccion h2 {
+                margin: 0;
+                font-size: 1.15rem;
+                font-weight: 700;
+            }
+
+            .tabla-comprobante {
+                width: 100%;
+            }
+
+            .fila {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                align-items: center;
+                border-bottom: 1px solid #9d9d9d;
+                min-height: 44px;
+                padding: 0 16px;
+                font-size: 0.98rem;
+            }
+
+            .fila .etiqueta {
+                color: #666;
+                padding: 12px 0;
+            }
+
+            .fila .valor {
+                text-align: right;
+                color: #555;
+                padding: 12px 0;
+                word-break: break-word;
+            }
+
+            .medio-pago {
+                display: inline-flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .mc {
+                display: inline-block;
+                position: relative;
+                width: 28px;
+                height: 16px;
+                vertical-align: middle;
+            }
+
+            .mc::before,
+            .mc::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+            }
+
+            .mc::before {
+                left: 0;
+                background: #ea001b;
+            }
+
+            .mc::after {
+                right: 0;
+                background: #f79e1b;
+                opacity: 0.95;
+            }
+
+            .acciones {
+                padding: 30px 18px 24px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .btn-compartir {
+                background: #5c6686;
+                color: #fff;
+                text-decoration: none;
+                border: none;
+                border-radius: 6px;
+                padding: 12px 20px;
+                min-width: 255px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                font-weight: 700;
+                font-size: 0.98rem;
+                cursor: pointer;
+            }
+
+            .btn-compartir:hover {
+                opacity: 0.95;
+            }
+
+            @media (max-width: 480px) {
+                .comprobante-box {
+                    max-width: 100%;
+                }
+
+                .fila {
+                    grid-template-columns: 0.95fr 1.05fr;
+                    font-size: 0.95rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div th:replace="fragmentos/header :: header"></div>
+        <nav class="menu-categorias">
+            <a th:href="@{/}">Nuevo</a>
+            <a th:href="@{/#sets}">Sets</a>
+            <a th:href="@{/#leggings}">Leggings</a>
+            <a th:href="@{/#tops}">Tops</a>
+            <a th:href="@{/#shorts}">Shorts</a>
+            <a th:href="@{/#enterizos}">Enterizos</a>
+        </nav>
+        <div class="pagina">
+            <div class="comprobante-box">
+
+                <div class="logo-area">
+                    <img th:src="@{/img/logo-jolensport.png}" alt="JolenSport" class="logo-cuadro"
+                         onerror="this.style.display='none'; document.getElementById('logoTexto').style.display='block';">
+                    <div id="logoTexto" class="logo-fallback" style="display:none;">J</div>
+                    <h1 class="marca">JolenSport</h1>
+                </div>
+
+                <div class="titulo-seccion">
+                    <h2>Comprobante de pago</h2>
+                </div>
+
+                <div class="tabla-comprobante">
+                    <div class="fila">
+                        <div class="etiqueta">Empresa</div>
+                        <div class="valor">JolenSport</div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Identificador</div>
+                        <div class="valor" th:text="${pedido.id}"></div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Importe</div>
+                        <div class="valor" th:text="'₡' + ${#numbers.formatDecimal(pedido.total, 1, 'POINT', 0, 'COMMA')}"></div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Medio de pago</div>
+                        <div class="valor">
+                            <span class="medio-pago">
+                                <span th:text="${pedido.medioPago}"></span>
+                                <span class="mc" th:if="${pedido.medioPago != null and (#strings.containsIgnoreCase(pedido.medioPago,'tarjeta') or #strings.containsIgnoreCase(pedido.medioPago,'mastercard'))}"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Cuota/Anticipo</div>
+                        <div class="valor">Cuota/Anticipo</div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Fecha</div>
+                        <div class="valor" th:text="${#dates.format(pedido.fecha, 'dd/MM/yyyy')}"></div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Hora</div>
+                        <div class="valor" th:text="${#dates.format(pedido.fecha, 'HH:mm:ss')}"></div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="etiqueta">Comprobante</div>
+                        <div class="valor" th:text="${'CB-' + pedido.id}"></div>
+                    </div>
+                </div>
+
+                <div class="acciones" style="flex-direction:column; gap:10px;">
+
+                    <button class="btn-compartir" type="button" onclick="window.print()">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        Compartir comprobante
+                    </button>
+
+                    <a th:href="@{/}" style="
+                       text-decoration:none;
+                       background:#000;
+                       color:#fff;
+                       padding:10px 20px;
+                       border-radius:999px;
+                       display:inline-block;
+                       ">
+                        Volver a la tienda
+                    </a>
+
+                </div>
+
+                <div style="text-align:center; margin-top:10px;">
+                    <a th:href="@{/}" style="
+                       text-decoration:none;
+                       background:#000;
+                       color:#fff;
+                       padding:10px 20px;
+                       border-radius:999px;
+                       display:inline-block;
+                       ">
+                        Volver a la tienda
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </body>
 </html>
