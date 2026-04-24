@@ -7,7 +7,7 @@
 
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
         <style>
             * {
                 box-sizing: border-box;
@@ -394,110 +394,143 @@
                     font-size: 1.7rem;
                 }
             }
-        </style>
-    </head>
-    <body>
+    </style>
+</head>
+<body>
 
-        <div class="contenedor-principal">
+<div class="contenedor-principal">
 
-            <div class="franja-superior"></div>
+    <div class="franja-superior"></div>
 
-            <div th:replace="fragmentos/header :: header"></div>
+    <div th:replace="fragmentos/header :: header"></div>
 
-            <nav class="menu-categorias">
+    <nav class="menu-categorias">
 
-                <a href="#nuevo">Nuevo</a>
+        <a href="#nuevo">Nuevo</a>
 
-                <a th:each="c : ${categorias}"
-                   th:href="${'#' + #strings.toLowerCase(#strings.replace(c.nombre, ' ', '-'))}"
-                   th:text="${c.nombre}">
+        <a th:each="c : ${categorias}"
+           th:href="${'#' + #strings.toLowerCase(#strings.replace(c.nombre, ' ', '-'))}"
+           th:text="${c.nombre}">
+        </a>
+
+        <a th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}"
+           th:href="@{/producto/lista}">
+            Admin
+        </a>
+
+    </nav>
+
+    <section class="hero" id="nuevo">
+        <img src="/img/banner-principal.jpg" alt="Banner principal">
+        <div class="hero-overlay">
+            <h2 class="hero-titulo">Mas vendidos</h2>
+            <a href="#populares" class="hero-boton">COMPRAR AHORA</a>
+        </div>
+    </section>
+
+    <section id="populares" class="seccion-categoria ancla-offset">
+        <h2 class="titulo-seccion">Más vendidos</h2>
+
+        <div class="grid-productos">
+            <div th:each="p : ${populares}" class="producto-card">
+
+                <a th:href="@{/favoritos/agregar/{id}(id=${p.id})}" class="btn-favorito">
+                    <i class="fa-regular fa-heart"></i>
                 </a>
 
-                <a th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}"
-                   th:href="@{/producto/lista}">
-                    Admin
+                <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                    <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                         th:alt="${p.nombre}"
+                         class="producto-img">
                 </a>
 
-            </nav>
+                <div class="producto-info">
+                    <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
+                        <div class="producto-nombre" th:text="${p.nombre}"></div>
+                    </a>
 
-            <section class="hero" id="nuevo">
-                <img src="/img/banner-principal.jpg" alt="Banner principal">
-                <div class="hero-overlay">
-                    <h2 class="hero-titulo">Mas vendidos</h2>
-                    <a href="#populares" class="hero-boton">COMPRAR AHORA</a>
-                </div>
-            </section>
-            <section id="populares" class="seccion-categoria ancla-offset">
-                <h2 class="titulo-seccion">Más vendidos</h2>
-                <div class="grid-productos">
-                    <div th:each="p : ${populares}" class="producto-card">
+                    <div class="producto-desc" th:text="${p.descripcion}"></div>
+                    <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
 
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
+                    <!-- 🔥 ARREGLADO -->
+                    <form th:action="@{/carrito/agregar/{id}(id=${p.id})}" method="post">
+                        <button type="submit" class="btn-jolen">
+                            Agregar al carrito
+                        </button>
+                    </form>
 
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}" style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
                 </div>
-            </section>
-            <section class="franja-envios">
-                <div class="franja-envios-track">
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                    <span>Envíos a todo Costa Rica</span>
-                </div>
-            </section>
-            <!-- MENSAJES DEL SISTEMA -->
-            <div th:if="${error}" style="background:#f8d7da; color:#842029; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
-                <span th:text="${error}"></span>
             </div>
+        </div>
+    </section>
 
-            <div th:if="${exito}" style="background:#d1e7dd; color:#0f5132; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
-                <span th:text="${exito}"></span>
+    <section class="franja-envios">
+        <div class="franja-envios-track">
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+            <span>Envíos a todo Costa Rica</span>
+        </div>
+    </section>
+
+    <div th:if="${error}" style="background:#f8d7da; color:#842029; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${exito}" style="background:#d1e7dd; color:#0f5132; padding:12px; margin:20px 0; border-radius:8px; text-align:center;">
+        <span th:text="${exito}"></span>
+    </div>
+
+    <section th:each="entry : ${productosPorCategoria}"
+             th:id="${#strings.toLowerCase(#strings.replace(entry.key, ' ', '-'))}"
+             class="seccion-categoria ancla-offset">
+
+        <h2 class="titulo-seccion" th:text="${entry.key}"></h2>
+
+        <div th:if="${#lists.isEmpty(entry.value)}" class="mensaje-vacio">
+            No hay productos disponibles en esta categoría.
+        </div>
+
+        <div th:if="${not #lists.isEmpty(entry.value)}" class="grid-productos">
+
+            <div th:each="p : ${entry.value}" class="producto-card">
+
+                <a th:href="@{/favoritos/agregar/{id}(id=${p.id})}" class="btn-favorito">
+                    <i class="fa-regular fa-heart"></i>
+                </a>
+
+                <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
+                    <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
+                         th:alt="${p.nombre}"
+                         class="producto-img">
+                </a>
+
+                <div class="producto-info">
+                    <a th:href="@{/producto/detalle/{id}(id=${p.id})}"
+                       style="text-decoration:none; color:inherit;">
+                        <div class="producto-nombre" th:text="${p.nombre}"></div>
+                    </a>
+
+                    <div class="producto-desc" th:text="${p.descripcion}"></div>
+                    <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
+
+                    <!-- 🔥 ARREGLADO -->
+                    <form th:action="@{/carrito/agregar/{id}(id=${p.id})}" method="post">
+                        <button type="submit" class="btn-jolen">
+                            Agregar al carrito
+                        </button>
+                    </form>
+
+                </div>
             </div>
-            <section th:each="entry : ${productosPorCategoria}"
-                     th:id="${#strings.toLowerCase(#strings.replace(entry.key, ' ', '-'))}"
-                     class="seccion-categoria ancla-offset">
+        </div>
+    </section>
 
-                <h2 class="titulo-seccion" th:text="${entry.key}"></h2>
+</div>
 
-                <div th:if="${#lists.isEmpty(entry.value)}" class="mensaje-vacio">
-                    No hay productos disponibles en esta categoría.
-                </div>
-
-                <div th:if="${not #lists.isEmpty(entry.value)}" class="grid-productos">
-                    <div th:each="p : ${entry.value}" class="producto-card">
-
-                        <a th:href="@{/producto/detalle/{id}(id=${p.id})}">
-                            <img th:src="@{${(p.imagenUrl != null and !#strings.isEmpty(p.imagenUrl)) ? p.imagenUrl : '/img/producto-default.jpg'}}"
-                                 th:alt="${p.nombre}"
-                                 class="producto-img">
-                        </a>
-
-                        <div class="producto-info">
-                            <a th:href="@{/producto/detalle/{id}(id=${p.id})}"
-                               style="text-decoration:none; color:inherit;">
-                                <div class="producto-nombre" th:text="${p.nombre}"></div>
-                            </a>
-
-                            <div class="producto-desc" th:text="${p.descripcion}"></div>
-                            <div class="producto-precio" th:text="'₡ ' + ${p.precio}"></div>
-                            <a th:href="@{/carrito/agregar/{id}(id=${p.id})}" class="btn-jolen">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
+</body>
+</html>

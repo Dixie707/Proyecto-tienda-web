@@ -19,7 +19,7 @@ public class CarritoService {
     public Carrito getCarrito(HttpSession session) {
         Object obj = session.getAttribute(KEY);
 
-        if (obj == null || !(obj instanceof Carrito)) {
+        if (!(obj instanceof Carrito)) {
             Carrito carrito = new Carrito();
             session.setAttribute(KEY, carrito);
             return carrito;
@@ -28,24 +28,31 @@ public class CarritoService {
         return (Carrito) obj;
     }
 
+    // ✅ SIN TALLA
     public void agregar(HttpSession session, Long productoId, int cantidad) {
         Optional<Producto> op = productoService.buscarPorId(productoId);
-        if (op.isEmpty()) return;
+
+        if (op.isEmpty()) {
+            return;
+        }
 
         Producto producto = op.get();
         Carrito carrito = getCarrito(session);
 
-        carrito.agregar(new ItemCarrito(
-                productoId,
+        ItemCarrito item = new ItemCarrito(
+                producto.getId(),
                 producto.getNombre(),
                 producto.getPrecio(),
                 cantidad,
-                producto.getImagenUrl()
-        ));
+                producto.getImagenUrl(),
+                false // guardado
+        );
 
+        carrito.agregar(item);
         session.setAttribute(KEY, carrito);
     }
 
+    // ✅ SIN TALLA
     public void eliminar(HttpSession session, Long productoId) {
         Carrito carrito = getCarrito(session);
         carrito.eliminar(productoId);
@@ -55,6 +62,20 @@ public class CarritoService {
     public void vaciar(HttpSession session) {
         Carrito carrito = getCarrito(session);
         carrito.limpiar();
+        session.setAttribute(KEY, carrito);
+    }
+
+    // ✅ SIN TALLA
+    public void guardarParaDespues(HttpSession session, Long productoId) {
+        Carrito carrito = getCarrito(session);
+        carrito.guardarParaDespues(productoId);
+        session.setAttribute(KEY, carrito);
+    }
+
+    // ✅ SIN TALLA
+    public void moverAlCarrito(HttpSession session, Long productoId) {
+        Carrito carrito = getCarrito(session);
+        carrito.moverAlCarrito(productoId);
         session.setAttribute(KEY, carrito);
     }
 

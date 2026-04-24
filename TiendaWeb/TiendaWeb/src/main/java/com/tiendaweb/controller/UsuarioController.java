@@ -2,9 +2,12 @@ package com.tiendaweb.controller;
 
 import com.tiendaweb.model.Usuario;
 import com.tiendaweb.service.UsuarioService;
+import com.tiendaweb.service.PedidoService;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -21,8 +24,14 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
+    private PedidoService pedidoService;
+
+    @Autowired
     private MessageSource messageSource;
 
+    // =========================
+    // LOGIN
+    // =========================
     @GetMapping("/login")
     public String loginForm() {
         return "usuario/login";
@@ -47,6 +56,9 @@ public class UsuarioController {
         return "redirect:/usuario/login";
     }
 
+    // =========================
+    // REGISTRO
+    // =========================
     @GetMapping("/registro")
     public String registroForm(Model model) {
         model.addAttribute("usuario", new Usuario());
@@ -84,9 +96,71 @@ public class UsuarioController {
         return "redirect:/usuario/login";
     }
 
+    // =========================
+    // LOGOUT
+    // =========================
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/usuario/login";
     }
+
+    // =========================
+    // PERFIL + HISTORIAL (HU-10 + HU-16)
+    // =========================
+    @GetMapping("/perfil")
+    public String perfil(HttpSession session, Model model) {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+        if (usuario == null) {
+            return "redirect:/usuario/login";
+        }
+
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("pedidos", pedidoService.listarPorUsuario(usuario.getId()));
+
+        return "usuario/perfil";
+    }
+    @GetMapping("/recuperar")
+public String recuperarForm() {
+    return "usuario/recuperar";
+}
+
+@PostMapping("/recuperar")
+public String recuperar(@RequestParam String correo,
+                        @RequestParam String nuevaContrasena,
+                        RedirectAttributes redirectAttributes) {
+
+    boolean actualizado = usuarioService.actualizarContrasena(correo, nuevaContrasena);
+
+    if (actualizado) {
+        redirectAttributes.addFlashAttribute("exito", "Contraseña actualizada correctamente");
+        return "redirect:/usuario/login";
+    }
+
+    redirectAttributes.addFlashAttribute("error", "El correo no existe");
+    return "redirect:/usuario/recuperar";
+}
+@PostMapping("/pedido/cancelar/{id}")
+public String cancelarPedido(@PathVariable Long id,
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
+
+    Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+    if (usuario == null) {
+        return "redirect:/usuario/login";
+    }
+
+    boolean cancelado = pedidoService.cancelarPedido(id, usuario.getId());
+
+    if (cancelado) {
+        redirectAttributes.addFlashAttribute("exito", "Pedido cancelado correctamente");
+    } else {
+        redirectAttributes.addFlashAttribute("error", "No se pudo cancelar el pedido");
+    }
+
+    return "redirect:/usuario/perfil";
+}
 }

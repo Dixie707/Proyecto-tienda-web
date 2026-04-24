@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mi perfil | JolenSport</title>
+
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    </head>
+    <body>
+
+        <div th:replace="fragmentos/header :: header"></div>
+
+        <section class="perfil-page">
+
+            <div class="perfil-contenedor">
+
+                <div class="perfil-card">
+                    <div class="perfil-icono">
+                        <i class="fa-regular fa-circle-user"></i>
+                    </div>
+
+                    <h1>Mi perfil</h1>
+
+                    <div class="perfil-dato">
+                        <span>Nombre</span>
+                        <strong th:text="${usuario.nombre}"></strong>
+                    </div>
+
+                    <div class="perfil-dato">
+                        <span>Correo</span>
+                        <strong th:text="${usuario.correo}"></strong>
+                    </div>
+
+                    <div class="perfil-dato">
+                        <span>Rol</span>
+                        <strong th:text="${usuario.rol}"></strong>
+                    </div>
+                </div>
+
+                <div class="pedidos-card">
+                    <div class="pedidos-header">
+                        <h2>Mis pedidos</h2>
+                        <p>Historial de compras realizadas</p>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(pedidos)}" class="sin-pedidos">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <h3>No tienes pedidos registrados</h3>
+                        <p>Cuando realices una compra, aparecerá aquí.</p>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(pedidos)}" class="tabla-responsive">
+                        <table class="tabla-pedidos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Total</th>
+                                    <th>Medio de pago</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="pedido : ${pedidos}">
+                                    <td>#<span th:text="${pedido.id}"></span></td>
+                                    <td>₡ <span th:text="${pedido.total}"></span></td>
+                                    <td th:text="${pedido.medioPago}"></td>
+
+                                    <td>
+                                        <span th:text="${pedido.estado}"></span>
+                                    </td>
+
+                                    <td>
+                                        <form th:if="${pedido.estado == 'Pendiente' or pedido.estado == 'En proceso'}"
+                                              th:action="@{/pedido/cancelar/{id}(id=${pedido.id})}"
+                                              method="post"
+                                              style="display:inline;">
+
+                                            <button type="submit"
+                                                    class="btn-cancelar-pedido"
+                                                    onclick="return confirm('¿Seguro que deseas cancelar este pedido?')">
+                                                Cancelar
+                                            </button>
+                                        </form>
+
+                                        <span th:if="${pedido.estado == 'Cancelado'}"
+                                              class="estado-cancelado">
+                                            Cancelado
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </body>
+</html>

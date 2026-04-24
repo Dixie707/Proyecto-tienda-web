@@ -20,7 +20,10 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @GetMapping("/checkout")
-    public String checkoutForm(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String checkoutForm(HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
@@ -35,6 +38,16 @@ public class PedidoController {
             return "redirect:/carrito";
         }
 
+        boolean tieneProductosActivos = carrito.getItems()
+                .stream()
+                .anyMatch(item -> !item.isGuardado());
+
+        if (!tieneProductosActivos) {
+            redirectAttributes.addFlashAttribute("error", "No tienes productos activos para comprar");
+            return "redirect:/carrito";
+        }
+
+        model.addAttribute("usuario", usuario);
         model.addAttribute("items", carrito.getItems());
         model.addAttribute("subtotal", carrito.getSubtotal());
         model.addAttribute("descuento", carrito.getMontoDescuento());
@@ -45,6 +58,10 @@ public class PedidoController {
 
     @PostMapping("/confirmar")
     public String confirmar(@RequestParam String medioPago,
+            @RequestParam String nombreEntrega,
+            @RequestParam String direccion,
+            @RequestParam String telefono,
+            @RequestParam String metodoEntrega,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -55,7 +72,15 @@ public class PedidoController {
             return "redirect:/usuario/login";
         }
 
-        Pedido pedido = pedidoService.crearPedido(session, usuario, medioPago);
+        Pedido pedido = pedidoService.crearPedido(
+                session,
+                usuario,
+                medioPago,
+                nombreEntrega,
+                direccion,
+                telefono,
+                metodoEntrega
+        );
 
         if (pedido == null) {
             redirectAttributes.addFlashAttribute("error", "No se pudo procesar el pedido");
@@ -66,19 +91,41 @@ public class PedidoController {
     }
 
     @GetMapping("/comprobante/{id}")
-    public String comprobante(@PathVariable Long id, Model model) {
+    public String comprobante(@PathVariable Long id,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión");
+            return "redirect:/usuario/login";
+        }
+
         Optional<Pedido> op = pedidoService.buscarPorId(id);
 
         if (op.isEmpty()) {
-            return "redirect:/";
+            redirectAttributes.addFlashAttribute("error", "Pedido no encontrado");
+            return "redirect:/pedido/misPedidos";
         }
 
-        model.addAttribute("pedido", op.get());
+        Pedido pedido = op.get();
+
+        if (!pedido.getUsuario().getId().equals(usuario.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para ver este pedido");
+            return "redirect:/pedido/misPedidos";
+        }
+
+        model.addAttribute("pedido", pedido);
         return "pedido/comprobante";
     }
 
     @GetMapping("/misPedidos")
-    public String misPedidos(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String misPedidos(HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
@@ -86,7 +133,32 @@ public class PedidoController {
             return "redirect:/usuario/login";
         }
 
+        model.addAttribute("usuario", usuario); // 🔥 FALTABA ESTO
         model.addAttribute("pedidos", pedidoService.listarPorUsuario(usuario.getId()));
-        return "pedido/misPedidos";
+
+        return "usuario/perfil";
+    }
+
+    @PostMapping("/cancelar/{id}")
+    public String cancelarPedido(@PathVariable Long id,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para cancelar un pedido");
+            return "redirect:/usuario/login";
+        }
+
+        boolean cancelado = pedidoService.cancelarPedido(id, usuario.getId());
+
+        if (cancelado) {
+            redirectAttributes.addFlashAttribute("exito", "Pedido cancelado correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "No se pudo cancelar el pedido");
+        }
+
+        return "redirect:/pedido/misPedidos";
     }
 }

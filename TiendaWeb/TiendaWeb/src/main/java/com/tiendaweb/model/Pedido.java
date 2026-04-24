@@ -28,6 +28,12 @@ public class Pedido {
 
     private String estado = "PAGADO";
 
+    // 🔽 HU-12 DIRECCIÓN DE ENVÍO
+    private String nombreEntrega;
+    private String direccion;
+    private String telefono;
+    private String metodoEntrega; // ENVIO o RETIRO
+
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<DetallePedido> detalles = new ArrayList<>();
 }

@@ -2,70 +2,69 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Error | JolenSport</title>
+    <title>Resultados | JolenSport</title>
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f3f3;
-        }
-
-        .contenedor {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .box {
-            background: white;
-            padding: 40px;
-            border-radius: 14px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
-        }
-
-        .box h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .box p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            text-decoration: none;
-            background: black;
-            color: white;
-            padding: 12px 22px;
-            border-radius: 999px;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background: #222;
-        }
-    </style>
 </head>
 <body>
 
 <div th:replace="fragmentos/header :: header"></div>
 
-<div class="contenedor">
-    <div class="box">
-        <h1>Oops 😅</h1>
-        <p>La página no existe o ocurrió un error.</p>
+<section class="seccion-resultados">
 
-        <a th:href="@{/}" class="btn">Volver al inicio</a>
+    <h2 class="titulo-seccion">Resultados de búsqueda</h2>
+
+    <p class="texto-busqueda" th:if="${query != null}">
+        Mostrando resultados para:
+        <strong th:text="${query}"></strong>
+    </p>
+
+    <div class="sin-resultados" th:if="${#lists.isEmpty(productos)}">
+        <h3>No se encontraron productos</h3>
+        <p>Intentá buscar con otra palabra.</p>
+        <a th:href="@{/}" class="btn-volver">Volver al inicio</a>
     </div>
-</div>
+
+    <div class="grid-productos" th:if="${!#lists.isEmpty(productos)}">
+
+        <div class="producto-card" th:each="producto : ${productos}">
+
+            <a th:href="@{/favoritos/agregar/{id}(id=${producto.id})}" class="btn-favorito">
+                <i class="fa-regular fa-heart"></i>
+            </a>
+
+            <a th:href="@{/producto/detalle/{id}(id=${producto.id})}">
+                <img th:src="@{${producto.imagenUrl}}"
+                     th:alt="${producto.nombre}"
+                     class="producto-img">
+            </a>
+
+            <div class="producto-info">
+                <a th:href="@{/producto/detalle/{id}(id=${producto.id})}">
+                    <h3 th:text="${producto.nombre}"></h3>
+                </a>
+
+                <p th:text="${producto.descripcion}"></p>
+
+                <h4>
+                    ₡ <span th:text="${producto.precio}"></span>
+                </h4>
+
+                <!-- 🔥 CORREGIDO -->
+                <form th:action="@{/carrito/agregar/{id}(id=${producto.id})}" method="post" class="form-agregar">
+                    <button type="submit" class="btn-jolen">
+                        Agregar al carrito
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
 </body>
 </html>

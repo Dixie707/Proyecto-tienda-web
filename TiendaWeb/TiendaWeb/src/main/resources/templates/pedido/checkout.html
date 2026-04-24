@@ -1,421 +1,464 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pago | JolenSport</title>
-           <link rel="stylesheet" th:href="@{/css/styles.css}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago | JolenSport</title>
 
-        <style>
-            * {
-                box-sizing: border-box;
-            }
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-            body {
-                margin: 0;
-                font-family: Arial, sans-serif;
-                background: #f3f3f3;
-                color: #111;
-            }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-            .pagina {
-                min-height: 100vh;
-                padding: 20px 16px;
-                display: flex;
-                justify-content: center;
-            }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+            color: #111;
+        }
 
+        .pagina {
+            min-height: 100vh;
+            padding: 20px 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .checkout-box {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            background: #fff;
+        }
+
+        .lado-izq {
+            background: #000;
+            color: #fff;
+            padding: 26px 18px 30px;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            font-style: italic;
+            margin: 0 0 28px 0;
+        }
+
+        .bloque {
+            margin-bottom: 26px;
+        }
+
+        .bloque h2 {
+            margin: 0 0 14px 0;
+            font-size: 1.15rem;
+            font-style: italic;
+            font-weight: 800;
+        }
+
+        .campo,
+        .select,
+        .radio-box,
+        .metodo-pago {
+            width: 100%;
+            border: 1px solid #444;
+            background: #000;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .campo,
+        .select {
+            padding: 14px 12px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .campo::placeholder {
+            color: #cfcfcf;
+        }
+
+        .fila-2,
+        .fila-3 {
+            display: grid;
+            gap: 0;
+            margin-top: 8px;
+        }
+
+        .fila-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .fila-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .fila-2 .campo,
+        .fila-3 .campo {
+            border-radius: 0;
+        }
+
+        .fila-2 .campo:first-child,
+        .fila-3 .campo:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .fila-2 .campo:last-child,
+        .fila-3 .campo:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .check-linea {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .radio-box,
+        .metodo-pago {
+            margin-top: 8px;
+            padding: 14px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .radio-izq {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-style: italic;
+            font-weight: 700;
+        }
+
+        .tarjeta-campos {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .tarjeta-campos.activo {
+            display: block;
+        }
+
+        .lado-der {
+            background: #f5f5f5;
+            border-left: 1px solid #cfcfcf;
+        }
+
+        .resumen-item {
+            display: grid;
+            grid-template-columns: 90px 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #b8b8b8;
+        }
+
+        .mini-img {
+            width: 82px;
+            height: 82px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #ddd;
+        }
+
+        .nombre-prod {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .detalle-prod {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .precio-prod {
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .subtotal-box {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #b8b8b8;
+        }
+
+        .acciones {
+            padding: 26px 16px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-volver {
+            text-decoration: none;
+            background: #ccc;
+            color: #000;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .btn-finalizar {
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 24px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .mensaje-error {
+            background: #ffdede;
+            color: #b30000;
+            border: 1px solid #ffb5b5;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+        }
+
+        .hidden-radio {
+            accent-color: white;
+        }
+
+        @media (max-width: 900px) {
             .checkout-box {
-                width: 100%;
-                max-width: 1100px;
-                display: grid;
-                grid-template-columns: 1.1fr 0.9fr;
-                background: #fff;
-            }
-
-            .lado-izq {
-                background: #000;
-                color: #fff;
-                padding: 26px 18px 30px;
-            }
-
-            .logo {
-                font-size: 4rem;
-                font-weight: 900;
-                font-style: italic;
-                margin: 0 0 28px 0;
-            }
-
-            .bloque {
-                margin-bottom: 26px;
-            }
-
-            .bloque h2 {
-                margin: 0 0 14px 0;
-                font-size: 1.15rem;
-                font-style: italic;
-                font-weight: 800;
-            }
-
-            .campo,
-            .select,
-            .radio-box,
-            .metodo-pago {
-                width: 100%;
-                border: 1px solid #444;
-                background: #000;
-                color: #fff;
-                border-radius: 4px;
-            }
-
-            .campo,
-            .select {
-                padding: 14px 12px;
-                font-size: 0.95rem;
-                outline: none;
-            }
-
-            .campo::placeholder {
-                color: #cfcfcf;
-            }
-
-            .fila-2,
-            .fila-3 {
-                display: grid;
-                gap: 0;
-                margin-top: 8px;
-            }
-
-            .fila-2 {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .fila-3 {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-
-            .fila-2 .campo,
-            .fila-3 .campo {
-                border-radius: 0;
-            }
-
-            .fila-2 .campo:first-child,
-            .fila-3 .campo:first-child {
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
-            }
-
-            .fila-2 .campo:last-child,
-            .fila-3 .campo:last-child {
-                border-top-right-radius: 4px;
-                border-bottom-right-radius: 4px;
-            }
-
-            .check-linea {
-                margin-top: 10px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-weight: 700;
-                font-size: 0.95rem;
-            }
-
-            .radio-box,
-            .metodo-pago {
-                margin-top: 8px;
-                padding: 14px 12px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .radio-izq {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-style: italic;
-                font-weight: 700;
-            }
-
-            .tarjeta-campos {
-                margin-top: 10px;
-                display: none;
-            }
-
-            .tarjeta-campos.activo {
-                display: block;
+                grid-template-columns: 1fr;
             }
 
             .lado-der {
-                background: #f5f5f5;
-                border-left: 1px solid #cfcfcf;
+                border-left: none;
+                border-top: 1px solid #cfcfcf;
             }
+        }
+    </style>
+</head>
 
-            .resumen-item {
-                display: grid;
-                grid-template-columns: 90px 1fr auto;
-                gap: 14px;
-                align-items: center;
-                padding: 14px 16px;
-                border-bottom: 1px solid #b8b8b8;
-            }
+<body>
 
-            .mini-img {
-                width: 82px;
-                height: 82px;
-                object-fit: cover;
-                border-radius: 6px;
-                background: #ddd;
-            }
+<div th:replace="fragmentos/header :: header"></div>
 
-            .nombre-prod {
-                font-weight: 700;
-                font-size: 0.95rem;
-                margin-bottom: 4px;
-            }
+<nav class="menu-categorias">
+    <a th:href="@{/}">Nuevo</a>
+    <a th:href="@{/#sets}">Sets</a>
+    <a th:href="@{/#leggings}">Leggings</a>
+    <a th:href="@{/#tops}">Tops</a>
+    <a th:href="@{/#shorts}">Shorts</a>
+    <a th:href="@{/#enterizos}">Enterizos</a>
+</nav>
 
-            .detalle-prod {
-                color: #888;
-                font-size: 0.85rem;
-            }
+<div class="pagina">
+    <div class="checkout-box">
 
-            .precio-prod {
-                font-size: 0.95rem;
-                white-space: nowrap;
-            }
+        <div class="lado-izq">
+            <a th:href="@{/}" style="text-decoration:none; color:white;">
+                <h1 class="logo">JolenSport</h1>
+            </a>
 
-            .subtotal-box {
-                display: flex;
-                justify-content: space-between;
-                padding: 12px 16px;
-                font-size: 0.9rem;
-                border-bottom: 1px solid #b8b8b8;
-            }
+            <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
-            .acciones {
-                padding: 26px 16px;
-                display: flex;
-                justify-content: flex-end;
-            }
+            <form th:action="@{/pedido/confirmar}" method="post">
 
-            .btn-finalizar {
-                background: #000;
-                color: #fff;
-                border: none;
-                border-radius: 999px;
-                padding: 12px 24px;
-                font-size: 1.05rem;
-                cursor: pointer;
-            }
+                <div class="bloque">
+                    <h2>Contacto</h2>
+                    <input class="campo"
+                           type="text"
+                           name="contacto"
+                           placeholder="Email o número de celular"
+                           required>
 
-            .mensaje-error {
-                background: #ffdede;
-                color: #b30000;
-                border: 1px solid #ffb5b5;
-                padding: 10px 12px;
-                border-radius: 8px;
-                margin-bottom: 14px;
-                font-size: 0.9rem;
-            }
-
-            .hidden-radio {
-                accent-color: white;
-            }
-
-            @media (max-width: 900px) {
-                .checkout-box {
-                    grid-template-columns: 1fr;
-                }
-
-                .lado-der {
-                    border-left: none;
-                    border-top: 1px solid #cfcfcf;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div th:replace="fragmentos/header :: header"></div>
-
-        <nav class="menu-categorias">
-            <a th:href="@{/}">Nuevo</a>
-            <a th:href="@{/#sets}">Sets</a>
-            <a th:href="@{/#leggings}">Leggings</a>
-            <a th:href="@{/#tops}">Tops</a>
-            <a th:href="@{/#shorts}">Shorts</a>
-            <a th:href="@{/#enterizos}">Enterizos</a>
-        </nav>
-        <div class="pagina">
-            <div class="checkout-box">
-
-                <div class="lado-izq">
-                    <a th:href="@{/}" style="text-decoration:none; color:white;">
-                        <h1 class="logo">JolenSport</h1>
-                    </a>
-
-                    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
-
-                    <form th:action="@{/pedido/confirmar}" method="post">
-
-                        <div class="bloque">
-                            <h2>Contacto</h2>
-                            <input class="campo" type="text" name="contacto" placeholder="Email o número de celular" required>
-
-                            <label class="check-linea">
-                                <input type="checkbox" name="novedades">
-                                Envíame novedades y ofertas
-                            </label>
-                        </div>
-
-                        <div class="bloque">
-                            <h2>Entrega</h2>
-
-                            <label class="radio-box">
-                                <span class="radio-izq">
-                                    <input class="hidden-radio" type="radio" name="tipoEntrega" value="Envio" checked>
-                                    Envío
-                                </span>
-                                <i class="fa-solid fa-truck"></i>
-                            </label>
-
-                            <label class="radio-box">
-                                <span class="radio-izq">
-                                    <input class="hidden-radio" type="radio" name="tipoEntrega" value="Retiro">
-                                    Retiro
-                                </span>
-                                <i class="fa-solid fa-store"></i>
-                            </label>
-                        </div>
-
-                        <div class="bloque">
-                            <select class="select" name="pais" required>
-                                <option value="Costa Rica">Costa Rica</option>
-                            </select>
-
-                            <div class="fila-2">
-                                <input class="campo" type="text" name="nombre" placeholder="Nombre" required>
-                                <input class="campo" type="text" name="apellidos" placeholder="Apellidos" required>
-                            </div>
-
-                            <input class="campo" type="text" name="direccion" placeholder="Dirección" required>
-
-                            <div class="fila-3">
-                                <input class="campo" type="text" name="provincia" placeholder="Provincia" required>
-                                <input class="campo" type="text" name="ciudad" placeholder="Ciudad" required>
-                                <input class="campo" type="text" name="codigoPostal" placeholder="Código postal" required>
-                            </div>
-
-                            <input class="campo" type="text" name="telefono" placeholder="Teléfono" required>
-                        </div>
-
-                        <div class="bloque">
-                            <h2>Pago</h2>
-
-                            <label class="metodo-pago">
-                                <span class="radio-izq">
-                                    <input class="hidden-radio metodo-radio" type="radio" name="medioPago" value="Tarjeta" checked>
-                                    Tarjeta
-                                </span>
-                                <i class="fa-regular fa-credit-card"></i>
-                            </label>
-
-                            <div id="tarjetaCampos" class="tarjeta-campos activo">
-                                <input class="campo" type="text" name="titularTarjeta" placeholder="Nombre en la tarjeta">
-                                <input class="campo" type="text" name="numeroTarjeta" placeholder="Número de tarjeta">
-                                <div class="fila-2">
-                                    <input class="campo" type="text" name="vencimiento" placeholder="MM/AA">
-                                    <input class="campo" type="text" name="cvv" placeholder="CVV">
-                                </div>
-                            </div>
-
-                            <label class="metodo-pago">
-                                <span class="radio-izq">
-                                    <input class="hidden-radio metodo-radio" type="radio" name="medioPago" value="SINPE">
-                                    SINPE
-                                </span>
-                                <i class="fa-solid fa-mobile-screen-button"></i>
-                            </label>
-
-                            <label class="metodo-pago">
-                                <span class="radio-izq">
-                                    <input class="hidden-radio metodo-radio" type="radio" name="medioPago" value="Efectivo">
-                                    Efectivo contra entrega
-                                </span>
-                                <i class="fa-solid fa-money-bill-wave"></i>
-                            </label>
-                        </div>
-
-                        <div class="acciones">
-
-                            <a th:href="@{/carrito}" style="
-                               margin-right:10px;
-                               text-decoration:none;
-                               background:#ccc;
-                               color:#000;
-                               padding:10px 18px;
-                               border-radius:999px;
-                               ">
-                                Volver
-                            </a>
-
-                            <button type="submit" class="btn-finalizar">
-                                Finalizar
-                            </button>
-
-                        </div>
-                    </form>
+                    <label class="check-linea">
+                        <input type="checkbox" name="novedades">
+                        Envíame novedades y ofertas
+                    </label>
                 </div>
 
-                <div class="lado-der">
-                    <div th:each="item : ${items}" class="resumen-item">
-                        <img class="mini-img"
-                             th:src="${item.imagenUrl != null and !#strings.isEmpty(item.imagenUrl) ? item.imagenUrl : '/img/producto-default.jpg'}"
-                             alt="Producto">
+                <div class="bloque">
+                    <h2>Entrega</h2>
 
-                        <div>
-                            <div class="nombre-prod" th:text="${item.nombre}"></div>
-                            <div class="detalle-prod">Cantidad: <span th:text="${item.cantidad}"></span></div>
+                    <label class="radio-box">
+                        <span class="radio-izq">
+                            <input class="hidden-radio"
+                                   type="radio"
+                                   name="metodoEntrega"
+                                   value="ENVIO"
+                                   checked>
+                            Envío
+                        </span>
+                        <i class="fa-solid fa-truck"></i>
+                    </label>
+
+                    <label class="radio-box">
+                        <span class="radio-izq">
+                            <input class="hidden-radio"
+                                   type="radio"
+                                   name="metodoEntrega"
+                                   value="RETIRO">
+                            Retiro
+                        </span>
+                        <i class="fa-solid fa-store"></i>
+                    </label>
+                </div>
+
+                <div class="bloque">
+                    <h2>Dirección de entrega</h2>
+
+                    <select class="select" name="pais" required>
+                        <option value="Costa Rica">Costa Rica</option>
+                    </select>
+
+                    <input class="campo"
+                           type="text"
+                           name="nombreEntrega"
+                           placeholder="Nombre completo"
+                           th:value="${usuario != null ? usuario.nombre : ''}"
+                           required>
+
+                    <input class="campo"
+                           type="text"
+                           name="direccion"
+                           placeholder="Dirección exacta"
+                           required>
+
+                    <div class="fila-3">
+                        <input class="campo" type="text" name="provincia" placeholder="Provincia">
+                        <input class="campo" type="text" name="ciudad" placeholder="Ciudad">
+                        <input class="campo" type="text" name="codigoPostal" placeholder="Código postal">
+                    </div>
+
+                    <input class="campo"
+                           type="text"
+                           name="telefono"
+                           placeholder="Teléfono"
+                           required>
+                </div>
+
+                <div class="bloque">
+                    <h2>Pago</h2>
+
+                    <label class="metodo-pago">
+                        <span class="radio-izq">
+                            <input class="hidden-radio metodo-radio"
+                                   type="radio"
+                                   name="medioPago"
+                                   value="Tarjeta"
+                                   checked>
+                            Tarjeta
+                        </span>
+                        <i class="fa-regular fa-credit-card"></i>
+                    </label>
+
+                    <div id="tarjetaCampos" class="tarjeta-campos activo">
+                        <input class="campo" type="text" name="titularTarjeta" placeholder="Nombre en la tarjeta">
+                        <input class="campo" type="text" name="numeroTarjeta" placeholder="Número de tarjeta">
+
+                        <div class="fila-2">
+                            <input class="campo" type="text" name="vencimiento" placeholder="MM/AA">
+                            <input class="campo" type="text" name="cvv" placeholder="CVV">
                         </div>
-
-                        <div class="precio-prod"
-                             th:text="'₡' + ${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 0, 'COMMA')}"></div>
                     </div>
 
-                    <div class="subtotal-box">
-                        <span>Subtotal</span>
-                        <span th:text="'₡' + ${#numbers.formatDecimal(subtotal, 1, 'POINT', 0, 'COMMA')}"></span>
-                    </div>
+                    <label class="metodo-pago">
+                        <span class="radio-izq">
+                            <input class="hidden-radio metodo-radio"
+                                   type="radio"
+                                   name="medioPago"
+                                   value="SINPE">
+                            SINPE
+                        </span>
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </label>
 
-                    <div class="subtotal-box" th:if="${descuento > 0}">
-                        <span>Descuento</span>
-                        <span th:text="'- ₡' + ${#numbers.formatDecimal(descuento, 1, 'POINT', 0, 'COMMA')}"></span>
-                    </div>
+                    <label class="metodo-pago">
+                        <span class="radio-izq">
+                            <input class="hidden-radio metodo-radio"
+                                   type="radio"
+                                   name="medioPago"
+                                   value="Efectivo">
+                            Efectivo contra entrega
+                        </span>
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </label>
+                </div>
 
-                    <div class="subtotal-box" style="font-weight:700; font-size:1.05rem;">
-                        <span>Total</span>
-                        <span th:text="'₡' + ${#numbers.formatDecimal(total, 1, 'POINT', 0, 'COMMA')}"></span>
+                <div class="acciones">
+                    <a th:href="@{/carrito}" class="btn-volver">Volver</a>
+
+                    <button type="submit" class="btn-finalizar">
+                        Finalizar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="lado-der">
+            <div th:each="item : ${items}" th:if="${!item.guardado}" class="resumen-item">
+                <img class="mini-img"
+                     th:src="${item.imagenUrl != null and !#strings.isEmpty(item.imagenUrl) ? item.imagenUrl : '/img/producto-default.jpg'}"
+                     alt="Producto">
+
+                <div>
+                    <div class="nombre-prod" th:text="${item.nombre}"></div>
+                    <div class="detalle-prod">
+                        Cantidad: <span th:text="${item.cantidad}"></span>
                     </div>
                 </div>
 
+                <div class="precio-prod"
+                     th:text="'₡' + ${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 0, 'COMMA')}"></div>
+            </div>
+
+            <div class="subtotal-box">
+                <span>Subtotal</span>
+                <span th:text="'₡' + ${#numbers.formatDecimal(subtotal, 1, 'POINT', 0, 'COMMA')}"></span>
+            </div>
+
+            <div class="subtotal-box" th:if="${descuento > 0}">
+                <span>Descuento</span>
+                <span th:text="'- ₡' + ${#numbers.formatDecimal(descuento, 1, 'POINT', 0, 'COMMA')}"></span>
+            </div>
+
+            <div class="subtotal-box" style="font-weight:700; font-size:1.05rem;">
+                <span>Total</span>
+                <span th:text="'₡' + ${#numbers.formatDecimal(total, 1, 'POINT', 0, 'COMMA')}"></span>
             </div>
         </div>
 
-        <script>
-            const radios = document.querySelectorAll('.metodo-radio');
-            const tarjetaCampos = document.getElementById('tarjetaCampos');
+    </div>
+</div>
 
-            function actualizarPago() {
-                const seleccionado = document.querySelector('.metodo-radio:checked');
-                if (seleccionado && seleccionado.value === 'Tarjeta') {
-                    tarjetaCampos.classList.add('activo');
-                } else {
-                    tarjetaCampos.classList.remove('activo');
-                }
-            }
+<script>
+    const radios = document.querySelectorAll('.metodo-radio');
+    const tarjetaCampos = document.getElementById('tarjetaCampos');
 
-            radios.forEach(r => r.addEventListener('change', actualizarPago));
-            actualizarPago();
-        </script>
-    </body>
+    function actualizarPago() {
+        const seleccionado = document.querySelector('.metodo-radio:checked');
+
+        if (seleccionado && seleccionado.value === 'Tarjeta') {
+            tarjetaCampos.classList.add('activo');
+        } else {
+            tarjetaCampos.classList.remove('activo');
+        }
+    }
+
+    radios.forEach(radio => radio.addEventListener('change', actualizarPago));
+    actualizarPago();
+</script>
+
+</body>
 </html>

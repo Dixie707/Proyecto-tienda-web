@@ -1,244 +1,310 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${producto.nombre}">Detalle del producto</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title th:text="${producto.nombre}">Detalle del producto</title>
 
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f3f3;
-            margin: 0;
-            padding: 0;
-            color: #111;
-        }
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f3f3f3;
+                margin: 0;
+                padding: 0;
+                color: #111;
+            }
 
-        .detalle-wrapper {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 24px 40px;
-        }
+            .detalle-wrapper {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 0 24px 40px;
+            }
 
-        .detalle-box {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
+            .detalle-box {
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+                overflow: hidden;
+            }
 
-        .detalle {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            align-items: stretch;
-        }
-
-        .imagen {
-            background: #f7f7f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-        }
-
-        .imagen img {
-            width: 100%;
-            max-width: 520px;
-            max-height: 650px;
-            border-radius: 14px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .info {
-            padding: 48px 42px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .categoria {
-            font-size: 0.95rem;
-            color: #777;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-
-        .nombre {
-            font-size: 2.6rem;
-            font-weight: 800;
-            margin-bottom: 18px;
-            line-height: 1.1;
-        }
-
-        .descripcion {
-            font-size: 1.05rem;
-            color: #555;
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-
-        .precio {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 22px;
-        }
-
-        .stock {
-            font-size: 1rem;
-            margin-bottom: 28px;
-        }
-
-        .stock-disponible {
-            color: #0f7a2a;
-            font-weight: 700;
-        }
-
-        .stock-agotado {
-            color: #b30000;
-            font-weight: 700;
-        }
-
-        .acciones {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 22px;
-        }
-
-        .btn-principal,
-        .btn-secundario {
-            display: inline-block;
-            text-decoration: none;
-            padding: 14px 26px;
-            border-radius: 999px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .btn-principal {
-            background: #000;
-            color: #fff;
-        }
-
-        .btn-principal:hover {
-            background: #222;
-        }
-
-        .btn-secundario {
-            background: #dcdcdc;
-            color: #111;
-        }
-
-        .btn-secundario:hover {
-            background: #cfcfcf;
-        }
-
-        .extra-info {
-            margin-top: 8px;
-            padding-top: 18px;
-            border-top: 1px solid #e2e2e2;
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 900px) {
             .detalle {
-                grid-template-columns: 1fr;
-            }
-
-            .info {
-                padding: 30px 24px;
-            }
-
-            .nombre {
-                font-size: 2rem;
-            }
-
-            .precio {
-                font-size: 1.7rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+                align-items: stretch;
             }
 
             .imagen {
-                padding: 20px;
+                background: #f7f7f7;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 30px;
             }
-        }
-    </style>
-</head>
-<body>
 
-    <div th:replace="fragmentos/header :: header"></div>
+            .imagen img {
+                width: 100%;
+                max-width: 520px;
+                max-height: 650px;
+                border-radius: 14px;
+                object-fit: cover;
+                display: block;
+            }
 
-    <nav class="menu-categorias">
-        <a th:href="@{/}">Nuevo</a>
-        <a th:href="@{/#sets}">Sets</a>
-        <a th:href="@{/#leggings}">Leggings</a>
-        <a th:href="@{/#tops}">Tops</a>
-        <a th:href="@{/#shorts}">Shorts</a>
-        <a th:href="@{/#enterizos}">Enterizos</a>
+            .info {
+                padding: 48px 42px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
 
-        <a th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}"
-           th:href="@{/producto/lista}">
-            Admin
-        </a>
-    </nav>
+            .categoria {
+                font-size: 0.95rem;
+                color: #777;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 700;
+            }
 
-    <div class="detalle-wrapper">
-        <div class="detalle-box">
-            <div class="detalle">
+            .nombre {
+                font-size: 2.6rem;
+                font-weight: 800;
+                margin-bottom: 18px;
+                line-height: 1.1;
+            }
 
-                <div class="imagen">
-                    <img th:src="@{${(producto.imagenUrl != null and !#strings.isEmpty(producto.imagenUrl)) ? producto.imagenUrl : '/img/producto-default.jpg'}}"
-                         th:alt="${producto.nombre}">
+            .descripcion {
+                font-size: 1.05rem;
+                color: #555;
+                margin-bottom: 24px;
+                line-height: 1.6;
+            }
+
+            .precio {
+                font-size: 2rem;
+                font-weight: 800;
+                margin-bottom: 22px;
+            }
+
+            .stock {
+                font-size: 1rem;
+                margin-bottom: 28px;
+            }
+
+            .stock-disponible {
+                color: #0f7a2a;
+                font-weight: 700;
+            }
+
+            .stock-agotado {
+                color: #b30000;
+                font-weight: 700;
+            }
+
+            .acciones {
+                display: flex;
+                gap: 14px;
+                flex-wrap: wrap;
+                margin-bottom: 22px;
+            }
+
+            .btn-principal,
+            .btn-secundario {
+                display: inline-block;
+                text-decoration: none;
+                padding: 14px 26px;
+                border-radius: 999px;
+                font-weight: 700;
+                transition: 0.2s ease;
+            }
+
+            .btn-principal {
+                background: #000;
+                color: #fff;
+            }
+
+            .btn-principal:hover {
+                background: #222;
+            }
+
+            .btn-secundario {
+                background: #dcdcdc;
+                color: #111;
+            }
+
+            .btn-secundario:hover {
+                background: #cfcfcf;
+            }
+
+            .extra-info {
+                margin-top: 8px;
+                padding-top: 18px;
+                border-top: 1px solid #e2e2e2;
+                color: #666;
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            @media (max-width: 900px) {
+                .detalle {
+                    grid-template-columns: 1fr;
+                }
+
+                .info {
+                    padding: 30px 24px;
+                }
+
+                .nombre {
+                    font-size: 2rem;
+                }
+
+                .precio {
+                    font-size: 1.7rem;
+                }
+
+                .imagen {
+                    padding: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div th:replace="fragmentos/header :: header"></div>
+
+        <nav class="menu-categorias">
+            <a th:href="@{/}">Nuevo</a>
+            <a th:href="@{/#sets}">Sets</a>
+            <a th:href="@{/#leggings}">Leggings</a>
+            <a th:href="@{/#tops}">Tops</a>
+            <a th:href="@{/#shorts}">Shorts</a>
+            <a th:href="@{/#enterizos}">Enterizos</a>
+
+            <a th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol == 'ADMIN'}"
+               th:href="@{/producto/lista}">
+                Admin
+            </a>
+        </nav>
+
+        <div class="detalle-wrapper">
+            <div class="detalle-box">
+                <div class="detalle">
+
+                    <div class="imagen">
+                        <img th:src="@{${(producto.imagenUrl != null and !#strings.isEmpty(producto.imagenUrl)) ? producto.imagenUrl : '/img/producto-default.jpg'}}"
+                             th:alt="${producto.nombre}">
+                    </div>
+
+                    <div class="info">
+                        <div class="categoria"
+                             th:text="${producto.categoria != null ? producto.categoria.nombre : 'Producto'}"></div>
+
+                        <div class="nombre" th:text="${producto.nombre}"></div>
+
+                        <div class="descripcion" th:text="${producto.descripcion}"></div>
+
+                        <div class="precio" th:text="'₡ ' + ${producto.precio}"></div>
+
+                        <div class="stock">
+                            <span th:if="${producto.stock > 0}" class="stock-disponible">
+                                Stock disponible: <strong th:text="${producto.stock}"></strong>
+                            </span>
+                            <span th:if="${producto.stock <= 0}" class="stock-agotado">
+                                Sin stock
+                            </span>
+                        </div>
+                        <div class="acciones-producto">
+
+                            <form th:if="${producto.stock > 0}"
+                                  th:action="@{/carrito/agregar/{id}(id=${producto.id})}"
+                                  method="post"
+                                  class="form-agregar">
+
+                                <button type="submit" class="btn-principal">
+                                    Agregar al carrito
+                                </button>
+                            </form>
+
+                            <div class="botones-secundarios">
+                                <a th:href="@{/favoritos/agregar/{id}(id=${producto.id})}" 
+                                   class="btn-favorito-detalle">
+                                    <i class="fa-regular fa-heart"></i> Favorito
+                                </a>
+
+                                <a th:href="@{/}" class="btn-secundario">
+                                    Volver al inicio
+                                </a>
+                            </div>
+
+                        </div>
+
+
+                        <div class="extra-info">
+                            Diseñado para brindar comodidad, estilo y rendimiento en cada entrenamiento.
+                            Ideal para usar en gimnasio, caminatas o tu día a día.
+                        </div>
+                    </div>
+
                 </div>
-
-                <div class="info">
-                    <div class="categoria"
-                         th:text="${producto.categoria != null ? producto.categoria.nombre : 'Producto'}"></div>
-
-                    <div class="nombre" th:text="${producto.nombre}"></div>
-
-                    <div class="descripcion" th:text="${producto.descripcion}"></div>
-
-                    <div class="precio" th:text="'₡ ' + ${producto.precio}"></div>
-
-                    <div class="stock">
-                        <span th:if="${producto.stock > 0}" class="stock-disponible">
-                            Stock disponible: <strong th:text="${producto.stock}"></strong>
-                        </span>
-                        <span th:if="${producto.stock <= 0}" class="stock-agotado">
-                            Sin stock
-                        </span>
-                    </div>
-
-                    <div class="acciones">
-                        <a th:if="${producto.stock > 0}"
-                           th:href="@{/carrito/agregar/{id}(id=${producto.id})}"
-                           class="btn-principal">
-                            Agregar al carrito
-                        </a>
-
-                        <a th:href="@{/}" class="btn-secundario">
-                            Volver al inicio
-                        </a>
-                    </div>
-
-                    <div class="extra-info">
-                        Diseñado para brindar comodidad, estilo y rendimiento en cada entrenamiento.
-                        Ideal para usar en gimnasio, caminatas o tu día a día.
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
+        <!-- ⭐ OPINIONES -->
+        <section class="opiniones-wrapper">
 
-</body>
+            <h2 class="titulo-opiniones">Opiniones de clientes</h2>
+
+            <!-- LISTA -->
+            <div th:if="${#lists.isEmpty(opiniones)}" class="sin-opiniones">
+                Este producto aún no tiene opiniones.
+            </div>
+
+            <div th:each="o : ${opiniones}" class="opinion-card">
+
+                <div class="estrellas">
+                    <span th:each="i : ${#numbers.sequence(1,5)}">
+                        <i class="fa-star"
+                           th:classappend="${i <= o.estrellas} ? 'fas activa' : 'far'"></i>
+                    </span>
+                </div>
+
+                <p class="comentario" th:text="${o.comentario}"></p>
+
+                <small class="usuario" th:text="${o.usuario.nombre}"></small>
+
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="form-opinion-box" th:if="${session.usuarioLogueado != null}">
+
+                <h3>Deja tu opinión</h3>
+
+                <form th:action="@{/producto/opinar}" method="post" class="form-opinion">
+
+                    <input type="hidden" name="productoId" th:value="${producto.id}">
+
+                    <div class="rating">
+                        <input type="radio" name="estrellas" value="5" id="star5"><label for="star5">★</label>
+                        <input type="radio" name="estrellas" value="4" id="star4"><label for="star4">★</label>
+                        <input type="radio" name="estrellas" value="3" id="star3"><label for="star3">★</label>
+                        <input type="radio" name="estrellas" value="2" id="star2"><label for="star2">★</label>
+                        <input type="radio" name="estrellas" value="1" id="star1"><label for="star1">★</label>
+                    </div>
+
+                    <textarea name="comentario" placeholder="Escribe tu opinión..." required></textarea>
+
+                    <button type="submit">Enviar opinión</button>
+                </form>
+
+            </div>
+
+            <div th:if="${session.usuarioLogueado == null}" class="login-opinion">
+                <a th:href="@{/usuario/login}">Inicia sesión para dejar una opinión</a>
+            </div>
+
+        </section>
+    </body>
 </html>

@@ -1,8 +1,10 @@
 package com.tiendaweb.controller;
 
+import com.tiendaweb.model.Opinion;
 import com.tiendaweb.model.Producto;
 import com.tiendaweb.model.Usuario;
 import com.tiendaweb.service.CategoriaService;
+import com.tiendaweb.service.OpinionService;
 import com.tiendaweb.service.ProductoService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -26,6 +28,9 @@ public class ProductoController {
 
     @Autowired
     private CategoriaService categoriaService;
+
+    @Autowired
+    private OpinionService opinionService;
 
     @Autowired
     private MessageSource messageSource;
@@ -52,14 +57,20 @@ public class ProductoController {
 
     @GetMapping("/detalle/{id}")
     public String detalle(@PathVariable Long id, Model model) {
+
         Optional<Producto> op = productoService.buscarPorId(id);
 
-        if (!op.isPresent()) {
+        if (op.isEmpty()) {
             return "redirect:/";
         }
 
-        model.addAttribute("producto", op.get());
+        Producto producto = op.get();
+
+        model.addAttribute("producto", producto);
         model.addAttribute("categorias", categoriaService.listar());
+        model.addAttribute("opiniones", opinionService.listarPorProducto(producto.getId()));
+        model.addAttribute("opinion", new Opinion());
+
         return "producto/detalle";
     }
 
@@ -91,7 +102,7 @@ public class ProductoController {
 
         Optional<Producto> op = productoService.buscarPorId(id);
 
-        if (!op.isPresent()) {
+        if (op.isEmpty()) {
             return "redirect:/producto/lista";
         }
 
@@ -120,8 +131,10 @@ public class ProductoController {
         }
 
         productoService.guardar(producto, imagen);
+
         String msg = messageSource.getMessage("producto.guardado.ok", null, locale);
         redirectAttributes.addFlashAttribute("exito", msg);
+
         return "redirect:/producto/lista";
     }
 
@@ -137,8 +150,56 @@ public class ProductoController {
         }
 
         productoService.eliminar(id);
+
         String msg = messageSource.getMessage("producto.eliminado.ok", null, locale);
         redirectAttributes.addFlashAttribute("exito", msg);
+
         return "redirect:/producto/lista";
+    }
+
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam("q") String query, Model model) {
+
+        var productos = productoService.buscar(query);
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("query", query);
+        model.addAttribute("categorias", categoriaService.listar());
+
+        return "productos";
+    }
+
+    @PostMapping("/opinar")
+    public String guardarOpinion(@RequestParam Long productoId,
+                                 @RequestParam int estrellas,
+                                 @RequestParam String comentario,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para opinar.");
+            return "redirect:/usuario/login";
+        }
+
+        Optional<Producto> productoOpt = productoService.buscarPorId(productoId);
+
+        if (productoOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Producto no encontrado.");
+            return "redirect:/";
+        }
+
+        Opinion opinion = new Opinion();
+        opinion.setProducto(productoOpt.get());
+        opinion.setUsuario(usuario);
+        opinion.setEstrellas(estrellas);
+        opinion.setComentario(comentario);
+
+        opinionService.guardar(opinion);
+
+        redirectAttributes.addFlashAttribute("exito", "Opinión agregada correctamente.");
+
+        return "redirect:/producto/detalle/" + productoId;
     }
 }

@@ -34,7 +34,18 @@ public class PedidoService {
         return pedidoRepository.findById(id);
     }
 
-    public Pedido crearPedido(HttpSession session, Usuario usuario, String medioPago) {
+    public Pedido guardar(Pedido pedido) {
+        return pedidoRepository.save(pedido);
+    }
+
+    public Pedido crearPedido(HttpSession session,
+            Usuario usuario,
+            String medioPago,
+            String nombreEntrega,
+            String direccion,
+            String telefono,
+            String metodoEntrega) {
+
         Carrito carrito = (Carrito) session.getAttribute("carrito");
 
         if (carrito == null || carrito.getItems().isEmpty() || usuario == null) {
@@ -44,9 +55,20 @@ public class PedidoService {
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setMedioPago(medioPago);
-        pedido.setTotal(carrito.getTotal());
+        pedido.setNombreEntrega(nombreEntrega);
+        pedido.setDireccion(direccion);
+        pedido.setTelefono(telefono);
+        pedido.setMetodoEntrega(metodoEntrega);
+        pedido.setEstado("Pendiente");
+
+        double totalActivos = 0;
 
         for (ItemCarrito item : carrito.getItems()) {
+
+            if (item.isGuardado()) {
+                continue;
+            }
+
             var productoOpt = productoRepository.findById(item.getProductoId());
 
             if (productoOpt.isEmpty()) {
@@ -65,17 +87,52 @@ public class PedidoService {
             detalle.setCantidad(item.getCantidad());
             detalle.setPrecioUnitario(item.getPrecio());
 
+            // ❌ ELIMINADO: detalle.setTalla(...)
+
             pedido.getDetalles().add(detalle);
 
             producto.setStock(producto.getStock() - item.getCantidad());
             productoRepository.save(producto);
+
+            totalActivos += item.getSubtotal();
         }
+
+        if (pedido.getDetalles().isEmpty()) {
+            return null;
+        }
+
+        pedido.setTotal(totalActivos);
 
         Pedido guardado = pedidoRepository.save(pedido);
 
-        carrito.limpiar();
+        carrito.getItems().removeIf(item -> !item.isGuardado());
         session.setAttribute("carrito", carrito);
 
         return guardado;
+    }
+
+    public boolean cancelarPedido(Long pedidoId, Long usuarioId) {
+
+        Optional<Pedido> pedidoOpt = pedidoRepository.findById(pedidoId);
+
+        if (pedidoOpt.isEmpty()) {
+            return false;
+        }
+
+        Pedido pedido = pedidoOpt.get();
+
+        if (pedido.getUsuario() == null || !pedido.getUsuario().getId().equals(usuarioId)) {
+            return false;
+        }
+
+        if (!pedido.getEstado().equals("Pendiente")
+                && !pedido.getEstado().equals("En proceso")) {
+            return false;
+        }
+
+        pedido.setEstado("Cancelado");
+        pedidoRepository.save(pedido);
+
+        return true;
     }
 }

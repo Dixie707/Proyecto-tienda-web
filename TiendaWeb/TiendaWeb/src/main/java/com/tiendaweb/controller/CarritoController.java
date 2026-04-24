@@ -9,12 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -40,69 +35,73 @@ public class CarritoController {
         return "carrito";
     }
 
-    @GetMapping("/carrito/agregar/{id}")
+    // ✅ AGREGAR SIN TALLA
+    @PostMapping("/carrito/agregar/{id}")
     public String agregarProducto(@PathVariable Long id,
-            @ModelAttribute("carrito") Carrito carrito,
-            RedirectAttributes redirectAttributes) {
+                                 @ModelAttribute("carrito") Carrito carrito,
+                                 RedirectAttributes redirectAttributes) {
 
         Optional<Producto> productoOpt = productoService.buscarPorId(id);
 
-        if (productoOpt.isPresent()) {
-            Producto p = productoOpt.get();
-
-            if (p.getStock() <= 0) {
-                redirectAttributes.addFlashAttribute("error", "Este producto está fuera de stock.");
-                return "redirect:/";
-            }
-
-            int cantidadActual = 0;
-            for (ItemCarrito item : carrito.getItems()) {
-                if (item.getProductoId().equals(id)) {
-                    cantidadActual = item.getCantidad();
-                    break;
-                }
-            }
-
-            if (cantidadActual >= p.getStock()) {
-                redirectAttributes.addFlashAttribute("error", "No puedes agregar más unidades. Stock disponible: " + p.getStock());
-                return "redirect:/";
-            }
-
-            ItemCarrito item = new ItemCarrito(
-                    p.getId(),
-                    p.getNombre(),
-                    p.getPrecio(),
-                    1,
-                    p.getImagenUrl()
-            );
-
-            carrito.agregar(item);
-            redirectAttributes.addFlashAttribute("exito", "Producto agregado al carrito.");
+        if (productoOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Producto no encontrado.");
+            return "redirect:/";
         }
 
+        Producto producto = productoOpt.get();
+
+        if (producto.getStock() <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Este producto está fuera de stock.");
+            return "redirect:/";
+        }
+
+        int cantidadActual = carrito.getItems().stream()
+                .filter(item -> item.getProductoId().equals(id))
+                .filter(item -> !item.isGuardado())
+                .mapToInt(ItemCarrito::getCantidad)
+                .sum();
+
+        if (cantidadActual >= producto.getStock()) {
+            redirectAttributes.addFlashAttribute("error",
+                    "No puedes agregar más unidades. Stock disponible: " + producto.getStock());
+            return "redirect:/";
+        }
+
+        ItemCarrito item = new ItemCarrito(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getPrecio(),
+                1,
+                producto.getImagenUrl(),
+                false // guardado
+        );
+
+        carrito.agregar(item);
+
+        redirectAttributes.addFlashAttribute("exito", "Producto agregado al carrito.");
         return "redirect:/";
     }
 
+    // ✅ AUMENTAR SIN TALLA
     @GetMapping("/carrito/aumentar/{id}")
     public String aumentarCantidad(@PathVariable Long id,
-            @ModelAttribute("carrito") Carrito carrito,
-            RedirectAttributes redirectAttributes) {
+                                  @ModelAttribute("carrito") Carrito carrito,
+                                  RedirectAttributes redirectAttributes) {
 
         Optional<Producto> productoOpt = productoService.buscarPorId(id);
 
         if (productoOpt.isPresent()) {
-            Producto p = productoOpt.get();
+            Producto producto = productoOpt.get();
 
-            int cantidadActual = 0;
-            for (ItemCarrito item : carrito.getItems()) {
-                if (item.getProductoId().equals(id)) {
-                    cantidadActual = item.getCantidad();
-                    break;
-                }
-            }
+            int cantidadActual = carrito.getItems().stream()
+                    .filter(item -> item.getProductoId().equals(id))
+                    .filter(item -> !item.isGuardado())
+                    .mapToInt(ItemCarrito::getCantidad)
+                    .sum();
 
-            if (cantidadActual >= p.getStock()) {
-                redirectAttributes.addFlashAttribute("error", "No hay más stock disponible para este producto.");
+            if (cantidadActual >= producto.getStock()) {
+                redirectAttributes.addFlashAttribute("error",
+                        "No hay más stock disponible para este producto.");
                 return "redirect:/carrito";
             }
         }
@@ -111,16 +110,20 @@ public class CarritoController {
         return "redirect:/carrito";
     }
 
+    // ✅ DISMINUIR SIN TALLA
     @GetMapping("/carrito/disminuir/{id}")
     public String disminuirCantidad(@PathVariable Long id,
-            @ModelAttribute("carrito") Carrito carrito) {
+                                    @ModelAttribute("carrito") Carrito carrito) {
+
         carrito.disminuirCantidad(id);
         return "redirect:/carrito";
     }
 
+    // ✅ ELIMINAR SIN TALLA
     @GetMapping("/carrito/eliminar/{id}")
     public String eliminarProducto(@PathVariable Long id,
-            @ModelAttribute("carrito") Carrito carrito) {
+                                   @ModelAttribute("carrito") Carrito carrito) {
+
         carrito.eliminar(id);
         return "redirect:/carrito";
     }
@@ -133,8 +136,8 @@ public class CarritoController {
 
     @PostMapping("/carrito/aplicar-cupon")
     public String aplicarCupon(@RequestParam("cupon") String cupon,
-            @ModelAttribute("carrito") Carrito carrito,
-            RedirectAttributes redirectAttributes) {
+                               @ModelAttribute("carrito") Carrito carrito,
+                               RedirectAttributes redirectAttributes) {
 
         if (cupon == null || cupon.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Debes ingresar un cupón.");
@@ -146,13 +149,33 @@ public class CarritoController {
         if ("DESCUENTO10".equals(cupon)) {
             carrito.setDescuento(0.10);
             carrito.setCuponAplicado(cupon);
-            redirectAttributes.addFlashAttribute("exito", "Cupón aplicado correctamente: 10% de descuento.");
+            redirectAttributes.addFlashAttribute("exito",
+                    "Cupón aplicado correctamente: 10% de descuento.");
         } else {
             carrito.setDescuento(0);
             carrito.setCuponAplicado(null);
-            redirectAttributes.addFlashAttribute("error", "El código de descuento no es válido.");
+            redirectAttributes.addFlashAttribute("error",
+                    "El código de descuento no es válido.");
         }
 
+        return "redirect:/carrito";
+    }
+
+    // ✅ GUARDAR SIN TALLA
+    @GetMapping("/carrito/guardar/{id}")
+    public String guardarParaDespues(@PathVariable Long id,
+                                     @ModelAttribute("carrito") Carrito carrito) {
+
+        carrito.guardarParaDespues(id);
+        return "redirect:/carrito";
+    }
+
+    // ✅ MOVER SIN TALLA
+    @GetMapping("/carrito/mover/{id}")
+    public String moverAlCarrito(@PathVariable Long id,
+                                 @ModelAttribute("carrito") Carrito carrito) {
+
+        carrito.moverAlCarrito(id);
         return "redirect:/carrito";
     }
 }

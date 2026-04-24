@@ -3,14 +3,17 @@
 <body>
 
 <header th:fragment="header" class="header-marca">
+
     <div class="fila-header">
 
+        <!-- 🔍 BUSCADOR -->
         <div class="lado-izquierdo">
-            <a th:href="@{/}" class="icono-header">
+            <button type="button" class="icono-header search-toggle" onclick="abrirBuscador()">
                 <i class="fa-solid fa-magnifying-glass"></i>
-            </a>
+            </button>
         </div>
 
+        <!-- 🧠 LOGO -->
         <div class="centro-logo">
             <a th:href="@{/}" style="text-decoration:none; color:inherit;">
                 <img src="/img/logo.png" alt="Logo JolenSport" class="logo-cuadro">
@@ -18,20 +21,38 @@
             </a>
         </div>
 
+        <!-- 👤 USUARIO / ACCIONES -->
         <div class="lado-derecho">
 
+            <!-- 👤 NO LOGUEADO -->
             <a th:if="${session.usuarioLogueado == null}"
                th:href="@{/usuario/login}"
                class="icono-header">
                 <i class="fa-regular fa-circle-user"></i>
             </a>
 
+            <!-- 👤 PERFIL -->
+            <a th:if="${session.usuarioLogueado != null}"
+               th:href="@{/usuario/perfil}"
+               class="icono-header">
+                <i class="fa-regular fa-circle-user"></i>
+            </a>
+
+            <!-- ❤️ FAVORITOS -->
+            <a th:if="${session.usuarioLogueado != null}"
+               th:href="@{/favoritos}"
+               class="icono-header">
+                <i class="fa-solid fa-heart"></i>
+            </a>
+
+            <!-- 🚪 LOGOUT -->
             <a th:if="${session.usuarioLogueado != null}"
                th:href="@{/usuario/logout}"
                class="icono-header">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </a>
 
+            <!-- 🛒 CARRITO -->
             <a th:href="@{/carrito}" class="icono-header">
                 <i class="fa-solid fa-bag-shopping"></i>
             </a>
@@ -39,6 +60,22 @@
         </div>
 
     </div>
+
+    <!-- 🔍 BARRA DE BÚSQUEDA -->
+    <div id="barraBusqueda" class="barra-busqueda">
+        <form th:action="@{/producto/buscar}" method="get">
+            <input type="text" name="q" placeholder="Buscar productos..." required>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <!-- ⚙️ SCRIPT -->
+    <script>
+        function abrirBuscador() {
+            document.getElementById("barraBusqueda").classList.toggle("activa");
+        }
+    </script>
+
 </header>
 
 </body>

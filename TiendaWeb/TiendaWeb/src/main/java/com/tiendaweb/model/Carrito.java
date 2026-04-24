@@ -3,7 +3,6 @@ package com.tiendaweb.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Carrito {
 
     private List<ItemCarrito> items = new ArrayList<>();
@@ -41,6 +40,7 @@ public class Carrito {
                 return;
             }
         }
+
         items.add(item);
     }
 
@@ -54,22 +54,23 @@ public class Carrito {
     }
 
     public void disminuirCantidad(Long id) {
-    ItemCarrito itemAEliminar = null;
+        ItemCarrito itemAEliminar = null;
 
-    for (ItemCarrito i : items) {
-        if (i.getProductoId().equals(id)) {
-            i.setCantidad(i.getCantidad() - 1);
-            if (i.getCantidad() <= 0) {
-                itemAEliminar = i;
+        for (ItemCarrito i : items) {
+            if (i.getProductoId().equals(id)) {
+                i.setCantidad(i.getCantidad() - 1);
+
+                if (i.getCantidad() <= 0) {
+                    itemAEliminar = i;
+                }
+
+                break;
             }
-            break;
         }
-    }
 
-    if (itemAEliminar != null) {
-        items.remove(itemAEliminar);
-    }
-
+        if (itemAEliminar != null) {
+            items.remove(itemAEliminar);
+        }
     }
 
     public void eliminar(Long id) {
@@ -94,5 +95,28 @@ public class Carrito {
 
     public double getTotal() {
         return getSubtotal() - getMontoDescuento();
+    }
+
+    public void guardarParaDespues(Long productoId) {
+        for (ItemCarrito item : items) {
+            if (item.getProductoId().equals(productoId)) {
+                item.setGuardado(true);
+            }
+        }
+    }
+
+    public void moverAlCarrito(Long productoId) {
+        for (ItemCarrito item : items) {
+            if (item.getProductoId().equals(productoId)) {
+                item.setGuardado(false);
+            }
+        }
+    }
+
+    public double getTotalActivos() {
+        return items.stream()
+                .filter(item -> !item.isGuardado())
+                .mapToDouble(ItemCarrito::getSubtotal)
+                .sum();
     }
 }

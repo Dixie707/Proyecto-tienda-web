@@ -39,4 +39,19 @@ public class UsuarioService {
                 .filter(u -> u.getContrasena().equals(contrasena))
                 .orElse(null);
     }
+    public boolean actualizarContrasena(String correo, String nuevaContrasena) {
+
+    Usuario usuario = usuarioRepository.findByCorreo(correo).orElse(null);
+
+    if (usuario == null) {
+        return false;
+    }
+
+    usuario.setContrasena(nuevaContrasena);
+    usuarioRepository.save(usuario);
+
+    return true;
+}
+
+    
 }
